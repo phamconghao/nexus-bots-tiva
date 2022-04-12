@@ -1,8 +1,6 @@
 #ifndef HW_HANDLER_H
 #define HW_HANDLER_H
 
-#define DEBUG
-
 #include <MotorWheel.h>
 #include "debug_printf.h"
 

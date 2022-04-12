@@ -5,13 +5,9 @@
 #include <stdio.h>
 #include <stdarg.h>
 
-#define DBG_MSG_SIZE    64
+#define DEBUG
 
-#ifdef DEBUG
-    #define DEBUG_PRINTF(...) debug_printf(__VA_ARGS__)
-#else
-    #define DEBUG_PRINTF(...) do {} while (0)
-#endif
+#define DBG_MSG_SIZE    64
 
 /**	
  *  @brief Initialize debug printf function.
@@ -30,5 +26,11 @@ void debug_init();
  *  @returns None
  */
 void debug_printf(const char *format, ...);
+
+#ifdef DEBUG
+    #define DEBUG_PRINTF(...) debug_printf(__VA_ARGS__)
+#else
+    #define DEBUG_PRINTF(...) do {} while (0)
+#endif
 
 #endif

@@ -5,7 +5,6 @@
  *     MSS main implementation of the Vital Signs Demo
  */
 
-#define DEBUG
 /**************************************************************************
  *                            Include Files
  **************************************************************************/
@@ -26,31 +25,46 @@
 /**************************************************************************
  *                           Global Declarations
  **************************************************************************/
+
 /**
  *  Global Variable for Motor 1 Encoder parameters required by the Demo
  */
-Encoder_Params_t encoderWheel_1_Params = {.Encoder_Handler = 
-                                            encoderWheel_1_Handler};
+Encoder_Params_t encoderWheel_1_Params = {encoderWheel_1_Handler};
 MotorWheel wheel1(M1_PWM, M1_DIR, M1_ENCA, M1_ENCB, 
-                &encoderWheel_1_Params, REDUCTION_RATIO_NAMIKI_MOTOR, WHEEL_CIRC);
+                &encoderWheel_1_Params, 
+                REDUCTION_RATIO_NAMIKI_MOTOR, WHEEL_CIRC);
 
 /**************************************************************************
  *                         Nexus Bot Demo Functions
  **************************************************************************/
 void main_program()
 {
+#ifdef DEBUG
+    debug_init();
+#endif
+
     // ledBlink_demo();
     // ledBlinkPWM_demo();
     // externalInterrupt_demo();
-    dbgPrintf_demo();
+    // dbgPrintf_demo();
+    pidMotorControl_demo();
+}
+
+void pidMotorControl_demo()
+{
+    DEBUG_PRINTF("Start PID Motor Control Demo");
+    wheel1.setupInterrupt();
+
+    /* Main loop */
+    for (;;) 
+    {
+        ;
+    }
 }
 
 void dbgPrintf_demo()
 {
     /* Init */
-#ifdef DEBUG
-    debug_init();
-#endif
     DEBUG_PRINTF("Start Debug Printf Demo");
 
     float flValue = 1.5;
@@ -69,9 +83,6 @@ void dbgPrintf_demo()
 void externalInterrupt_demo()
 {
     /* Init */
-#ifdef DEBUG
-    debug_init();
-#endif
     DEBUG_PRINTF("Start external Interrupt Demo");
 
     pinMode(TIVA_SW1, INPUT_PULLUP);
@@ -86,9 +97,6 @@ void externalInterrupt_demo()
 
 void ledBlink_demo()
 {
-#ifdef DEBUG
-    debug_init();
-#endif
     DEBUG_PRINTF("Start LED Blink counter Demo");
 
     uint16_t blinkCounter = 0;
@@ -108,9 +116,6 @@ void ledBlink_demo()
 void ledBlinkPWM_demo()
 {
     /* Init */
-#ifdef DEBUG
-    debug_init();
-#endif
     DEBUG_PRINTF("Start LED Blink with PWM Demo");
 
     uint16_t pwmIntensity = 0;

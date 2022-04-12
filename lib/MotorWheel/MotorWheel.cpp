@@ -15,7 +15,7 @@ Motor::Motor(   Encoder_Params_t *encoderParams,
 	pinMode(m_pinPWM, OUTPUT);
 	pinMode(m_pinDir, OUTPUT);
 	/* Interrupt Pin configuration */
-	pinMode(m_encoderParams->pinIRQ, INPUT);
+	pinMode(m_encoderParams->pinIRQ, INPUT_PULLUP); // @TODO: Carefully Check with Encoder
 #else                           /* For Arduino */
 	pinMode(pinPWM, OUTPUT);
 	pinMode(pinDir, OUTPUT);
@@ -24,7 +24,7 @@ Motor::Motor(   Encoder_Params_t *encoderParams,
 
 	if (m_encoderParams->pinIRQB != PIN_UNDEFINED)
 	{
-		pinMode(m_encoderParams->pinIRQB, INPUT);
+		pinMode(m_encoderParams->pinIRQB, INPUT_PULLUP); // @TODO: Carefully Check with Encoder
 	}
 	/* Disable PID */
 	PIDDisable();
@@ -33,7 +33,7 @@ Motor::Motor(   Encoder_Params_t *encoderParams,
 void Motor::setupInterrupt()
 {
 #if defined(__TM4C123GH6PM__)   /* For Tiva C */
-	attachInterrupt(m_encoderParams->pinIRQ, m_encoderParams->Encoder_Handler, TRIGGER);
+	attachInterrupt(m_encoderParams->pinIRQ, m_encoderParams->Encoder_Handler, RISING);
 #else                           /* For Arduino */
 	if (isr->pinIRQ == 2 || isr->pinIRQ == 3)
 		attachInterrupt(isr->pinIRQ - 2, isr->ISRfunc, TRIGGER);

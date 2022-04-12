@@ -4,6 +4,8 @@
 //
 void encoderWheel_1_Handler()
 {
+    DEBUG_PRINTF("Encoder interrupt Occured!");
+
     static bool first_pulse = true;
     encoderWheel_1_Params.pulseEndMicros = micros();
     if ((first_pulse == false) && (encoderWheel_1_Params.pulseEndMicros > encoderWheel_1_Params.pulseStartMicros))
