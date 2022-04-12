@@ -41,7 +41,29 @@ void main_program()
 {
     // ledBlink_demo();
     // ledBlinkPWM_demo();
-    externalInterrupt_demo();
+    // externalInterrupt_demo();
+    dbgPrintf_demo();
+}
+
+void dbgPrintf_demo()
+{
+    /* Init */
+#ifdef DEBUG
+    debug_init();
+#endif
+    DEBUG_PRINTF("Start Debug Printf Demo");
+
+    float flValue = 1.5;
+    long longValue = 146;
+
+    DEBUG_PRINTF("Float value %f", flValue);
+    DEBUG_PRINTF("Long value %ld", longValue);
+
+    /* Main loop */
+    for (;;) 
+    {
+        ;
+    }
 }
 
 void externalInterrupt_demo()

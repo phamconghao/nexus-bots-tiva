@@ -25,5 +25,6 @@
 void ledBlink_demo();
 void ledBlinkPWM_demo();
 void externalInterrupt_demo();
+void dbgPrintf_demo();
 
 #endif
