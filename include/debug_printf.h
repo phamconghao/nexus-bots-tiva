@@ -7,13 +7,28 @@
 
 #define DBG_MSG_SIZE    64
 
-void debug_init();
-void debug_printf(const char *format, ...);
-
-#ifdef DEBUG_BUILD
-#  define DEBUG(x) debug_printf(x)
+#ifdef DEBUG
+    #define DEBUG_PRINTF(...) debug_printf(__VA_ARGS__)
 #else
-#  define DEBUG(x) do {} while (0)
+    #define DEBUG_PRINTF(...) do {} while (0)
 #endif
+
+/**	
+ *  @brief Initialize debug printf function.
+ *
+ *  @param None
+ *
+ *  @returns None
+ */
+void debug_init();
+
+/**	
+ *  @brief Debug printf function.
+ *
+ *  @param None
+ *
+ *  @returns None
+ */
+void debug_printf(const char *format, ...);
 
 #endif

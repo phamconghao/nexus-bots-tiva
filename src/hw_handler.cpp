@@ -70,3 +70,7 @@ void encoderWheel_1_Handler()
 //     encoderWheel_3_Params.currDirection == DIR_ADVANCE ? ++encoderWheel_3_Params.pulses : --encoderWheel_3_Params.pulses;
 // }
 
+void extInterruptDemoHandler()
+{
+    DEBUG_PRINTF("External Interrupt Occured!");
+}

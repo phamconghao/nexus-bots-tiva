@@ -33,3 +33,6 @@
 
 # VSCode folders
 .vscode/
+
+# Build folders
+.pio/

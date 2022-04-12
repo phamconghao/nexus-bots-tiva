@@ -29,13 +29,13 @@ V1.5	201209	Omni4WD is re-implemented, and now return value of Omni4WD::getSpeed
 #include <Arduino.h>
 #include <pid_lib.h>
 
+#define MAX_PWM 			255
+
 #define DIR_ADVANCE 		HIGH
 #define DIR_BACKOFF 		LOW
 
 #define PIN_UNDEFINED 		255
 #define REF_VOLT 			12
-
-#define MAX_PWM 			65535
 
 #ifdef _NAMIKI_MOTOR
 	#define TRIGGER 		CHANGE

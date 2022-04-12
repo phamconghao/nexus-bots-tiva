@@ -1,14 +1,19 @@
 #ifndef HW_HANDLER_H
 #define HW_HANDLER_H
 
+#define DEBUG
+
 #include <MotorWheel.h>
+#include "debug_printf.h"
+
+extern Encoder_Params_t encoderWheel_1_Params;
 
 /**	
  *  @brief Wheel 1 encoder handler function.
  *
  *  @param None
  *
- *  @returns 	None
+ *  @returns None
  */
 void encoderWheel_1_Handler();
 
@@ -17,7 +22,7 @@ void encoderWheel_1_Handler();
  *
  *  @param None
  *
- *  @returns 	None
+ *  @returns None
  */
 void encoderWheel_2_Handler();
 
@@ -26,10 +31,10 @@ void encoderWheel_2_Handler();
  *
  *  @param None
  *
- *  @returns 	None
+ *  @returns None
  */
 void encoderWheel_3_Handler();
 
-extern Encoder_Params_t encoderWheel_1_Params;
+extern void extInterruptDemoHandler();
 
 #endif /* HW_HANDLER_H */
