@@ -10,11 +10,18 @@ Motor::Motor(   Encoder_Params_t *encoderParams,
 	m_encoderParams->pinIRQ = pinIRQ;
 	m_encoderParams->pinIRQB = pinIRQB;
 
+#if defined(__TM4C123GH6PM__)   /* For Tiva C */
 	/* GPIO Pin configuration */
 	pinMode(m_pinPWM, OUTPUT);
 	pinMode(m_pinDir, OUTPUT);
 	/* Interrupt Pin configuration */
 	pinMode(m_encoderParams->pinIRQ, INPUT);
+#else                           /* For Arduino */
+	pinMode(pinPWM, OUTPUT);
+	pinMode(pinDir, OUTPUT);
+	pinMode(m_encoderParams->pinIRQ, INPUT);
+#endif
+
 	if (m_encoderParams->pinIRQB != PIN_UNDEFINED)
 	{
 		pinMode(m_encoderParams->pinIRQB, INPUT);
@@ -25,13 +32,15 @@ Motor::Motor(   Encoder_Params_t *encoderParams,
 
 void Motor::setupInterrupt()
 {
-/*for maple*/
-#if defined(BOARD_maple) || defined(BOARD_maple_native) || defined(BOARD_maple_mini)
-	attachInterrupt(m_encoderParams->pinIRQ, m_encoderParams->Encoder_Handler, TRIGGER); // RISING --> CHANGE 201207
-
-/*for arduino*/
-#else
-	attachInterrupt(m_encoderParams->pinIRQ - 2, m_encoderParams->Encoder_Handler, TRIGGER);
+#if defined(__TM4C123GH6PM__)   /* For Tiva C */
+	attachInterrupt(m_encoderParams->pinIRQ, m_encoderParams->Encoder_Handler, TRIGGER);
+#else                           /* For Arduino */
+	if (isr->pinIRQ == 2 || isr->pinIRQ == 3)
+		attachInterrupt(isr->pinIRQ - 2, isr->ISRfunc, TRIGGER);
+	// else
+	// {
+	// 	PCattachInterrupt(isr->pinIRQ, isr->ISRfunc, TRIGGER); // RISING --> CHANGE 201207
+	// }
 #endif
 }
 
@@ -283,44 +292,21 @@ void Motor::delayMS(unsigned int ms, bool debug)
 
 void Motor::debugger() const
 {
+    // DEBUG_PRINTF("m_pinPWM      -> %d", m_pinPWM);
+    // DEBUG_PRINTF("m_pinDir      -> %d", m_pinDir);
+    // DEBUG_PRINTF("pinIRQ        -> %d", m_encoderParams->pinIRQ);
+    // DEBUG_PRINTF("pinIRQB       -> %d", m_encoderParams->pinIRQB);
 
-#ifdef DEBUG
-		if (!Serial.available()) Serial.begin(Baudrate);
-	/*
-		Serial.print("m_pinPWM -> ");
-		Serial.println(m_pinPWM,DEC);
-		Serial.print("m_pinDir -> ");
-		Serial.println(m_pinDir,DEC);
-		Serial.print("pinIRQ -> ");
-		Serial.println(pinIRQ,DEC);
-		Serial.print("pinIRQB-> ");
-		Serial.println(pinIRQB,DEC);
-	 */
+	DEBUG_PRINTF("DesiredDir    -> %d", desiredDirection);
+	DEBUG_PRINTF("currDir       -> %d", m_encoderParams->currDirection);
+	DEBUG_PRINTF("PWM           -> %d", speedPWM);
+	DEBUG_PRINTF("Input         -> %d", speedRPMInput);
+	DEBUG_PRINTF("Output        -> %d", speedRPMOutput);
+	DEBUG_PRINTF("Desired       -> %d", speedRPMDesired);
 
-	Serial.print("DesiredDir -> ");
-	Serial.println(desiredDirection);
-	Serial.print("currDir ->");
-	Serial.println(m_encoderParams->currDirection);
-
-	Serial.print("PWM    -> ");
-	Serial.println(speedPWM, DEC);
-	Serial.print("Input  -> ");
-	Serial.println(speedRPMInput, DEC);
-	Serial.print("Output -> ");
-	Serial.println(speedRPMOutput, DEC);
-	Serial.print("Desired-> ");
-	Serial.println(speedRPMDesired, DEC);
-
-	/*
-		Serial.print("speed2DutyCycle-> ");
-		Serial.println(speed2DutyCycle);
-		Serial.print("speedPPS> ");
-		Serial.println(m_encoderParams->speedPPS,DEC);
-		Serial.print("pulses -> ");
-		Serial.println(m_encoderParams->pulses,DEC);
-	 */
-
-#endif
+    // DEBUG_PRINTF("speed2DutyCycle   -> %f", speed2DutyCycle);
+    // DEBUG_PRINTF("speedPPS          -> %d", m_encoderParams->speedPPS);
+    // DEBUG_PRINTF("pulses            -> %ld", m_encoderParams->pulses);
 }
 
 GearedMotor::GearedMotor(unsigned char pinPWM, unsigned char pinDir,

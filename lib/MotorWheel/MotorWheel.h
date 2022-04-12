@@ -26,8 +26,11 @@ V1.5	201209	Omni4WD is re-implemented, and now return value of Omni4WD::getSpeed
 #ifndef MotorWheel_H
 #define MotorWheel_H
 
+// #define DEBUG
+
 #include <Arduino.h>
 #include <pid_lib.h>
+#include "../../include/debug_printf.h"
 
 #define MAX_PWM 			255
 
