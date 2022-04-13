@@ -53,12 +53,17 @@ void main_program()
 void pidMotorControl_demo()
 {
     DEBUG_PRINTF("Start PID Motor Control Demo\n");
+
     wheel1.setupInterrupt();
 
     /* Main loop */
-    for (;;) 
+    for (;;)
     {
-        ;
+        DEBUG_PRINTF("EncoderWheel_1_");
+        DEBUG_PRINTF("\tcurrDirection -> %d", encoderWheel_1_Params.currDirection);
+        DEBUG_PRINTF("\tspeedPPS -> %d", encoderWheel_1_Params.speedPPS);
+        DEBUG_PRINTF("\t\tspeedRPM -> %d\n", wheel1.getSpeedRPM());
+        delay(100);
     }
 }
 
@@ -74,7 +79,7 @@ void dbgPrintf_demo()
     DEBUG_PRINTF("Long value %ld", longValue);
 
     /* Main loop */
-    for (;;) 
+    for (;;)
     {
         ;
     }
