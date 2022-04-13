@@ -61,8 +61,6 @@ V1.5	201209	Omni4WD is re-implemented, and now return value of Omni4WD::getSpeed
 #define TAUD 				0.00
 #define SAMPLETIME 			5
 
-#define Baudrate 			115200
-
 #ifndef REDUCTION_RATIO
 	#define REDUCTION_RATIO 64
 #endif
@@ -90,7 +88,7 @@ typedef struct Encoder_Params_t
 	volatile bool currDirection;
     /* Encoder Interrupt Pin */
 	unsigned char pinIRQ;
-    /* Encoder Interrupt B Pin */
+    /* Encoder non-Interrupt Pin */
     unsigned char pinIRQB;
 } Encoder_Params;
 
@@ -112,7 +110,7 @@ public:
 	 *  @param pinPWM           PWM control GPIO pin
 	 *  @param pinDir           Direction control GPIO pin
 	 *  @param pinIRQ           Encoder Interrupt Pin
-	 *  @param pinIRQB          Encoder Interrupt B Pin
+	 *  @param pinIRQB          Encoder non-Interrupt Pin
 	 *  @param encoderParams    Structure to hold all the relevant information for 
      *                          the encoder interrupt handling
 	 *
@@ -574,7 +572,7 @@ public:
 	 *  @param pinPWM           PWM control GPIO pin
 	 *  @param pinDir           Direction control GPIO pin
 	 *  @param pinIRQ           Encoder Interrupt Pin
-	 *  @param pinIRQB          Encoder Interrupt B Pin
+	 *  @param pinIRQB          Encoder non-Interrupt Pin
 	 *  @param encoderParams    Structure to hold all the relevant information for 
      *                          the encoder interrupt handling
 	 *  @param _ratio           Motor Reduction ratio or Gear ratio (Default is REDUCTION_RATIO=64)
@@ -617,7 +615,7 @@ public:
 	 *  @param pinPWM           PWM control GPIO pin
 	 *  @param pinDir           Direction control GPIO pin
 	 *  @param pinIRQ           Encoder Interrupt Pin
-	 *  @param pinIRQB          Encoder Interrupt B Pin
+	 *  @param pinIRQB          Encoder non-Interrupt Pin
 	 *  @param encoderParams    Structure to hold all the relevant information for 
      *                          the encoder interrupt handling
 	 *  @param ratio            Motor Reduction ratio or Gear ratio (Default is REDUCTION_RATIO=64)
