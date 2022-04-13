@@ -3,10 +3,6 @@
 
 void encoderWheel_1_Handler()
 {
-    DEBUG_PRINTF("Call from encoderWheel_1_Handler()");
-    DEBUG_PRINTF("    currDirection -> %d", encoderWheel_1_Params.currDirection);
-    DEBUG_PRINTF("    speedPPS -> %d\n", encoderWheel_1_Params.speedPPS);
-
     static bool first_pulse = true;
     encoderWheel_1_Params.pulseEndMicros = micros();
     if ((first_pulse == false) && 
@@ -42,7 +38,6 @@ void encoderWheel_1_Handler()
 
 void encoderWheel_2_Handler()
 {
-    DEBUG_PRINTF("Encoder _2_ interrupt Occured!");
     static bool first_pulse = true;
     encoderWheel_2_Params.pulseEndMicros = micros();
     if (first_pulse == false && 
@@ -69,12 +64,12 @@ void encoderWheel_2_Handler()
 
 void encoderWheel_3_Handler()
 {
-    DEBUG_PRINTF("Encoder _3_ interrupt Occured!");
     static bool first_pulse = true;                                                   
     encoderWheel_3_Params.pulseEndMicros = micros();
     if (first_pulse == false && 
         encoderWheel_3_Params.pulseEndMicros > encoderWheel_3_Params.pulseStartMicros)
     {
+        // FIXME: speedPPS limit was changed in difference tries
         encoderWheel_3_Params.speedPPS = 
             MICROS_PER_SEC / (encoderWheel_3_Params.pulseEndMicros - encoderWheel_3_Params.pulseStartMicros);
         // encoderWheel_3_Params.accPPSS = 
