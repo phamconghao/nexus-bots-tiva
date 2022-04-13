@@ -17,7 +17,7 @@
 #define M1_PWM      PF_2
 #define M1_DIR      PA_4
 // #define M1_ENCA     PC_5
-#define M1_ENCA     PF_4
+#define M1_ENCA     PC_5
 #define M1_ENCB     PC_6
 
 /**************************************************************************

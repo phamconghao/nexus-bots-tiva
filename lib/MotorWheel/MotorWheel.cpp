@@ -15,7 +15,7 @@ Motor::Motor(   Encoder_Params_t *encoderParams,
 	pinMode(m_pinPWM, OUTPUT);
 	pinMode(m_pinDir, OUTPUT);
 	/* Interrupt Pin configuration */
-	pinMode(m_encoderParams->pinIRQ, INPUT_PULLUP); // @TODO: Carefully Check with Encoder
+	pinMode(m_encoderParams->pinIRQ, INPUT_PULLUP);
 #else                           /* For Arduino */
 	pinMode(pinPWM, OUTPUT);
 	pinMode(pinDir, OUTPUT);
@@ -24,7 +24,7 @@ Motor::Motor(   Encoder_Params_t *encoderParams,
 
 	if (m_encoderParams->pinIRQB != PIN_UNDEFINED)
 	{
-		pinMode(m_encoderParams->pinIRQB, INPUT_PULLUP); // @TODO: Carefully Check with Encoder
+		pinMode(m_encoderParams->pinIRQB, INPUT_PULLUP);
 	}
 	/* Disable PID */
 	PIDDisable();

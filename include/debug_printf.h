@@ -21,7 +21,7 @@ void debug_init();
 /**	
  *  @brief Debug printf function.
  *
- *  @param None
+ *  @param format Standard printf string format, maximum length is DBG_MSG_SIZE
  *
  *  @returns None
  */

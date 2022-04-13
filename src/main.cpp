@@ -52,7 +52,7 @@ void main_program()
 
 void pidMotorControl_demo()
 {
-    DEBUG_PRINTF("Start PID Motor Control Demo");
+    DEBUG_PRINTF("Start PID Motor Control Demo\n");
     wheel1.setupInterrupt();
 
     /* Main loop */

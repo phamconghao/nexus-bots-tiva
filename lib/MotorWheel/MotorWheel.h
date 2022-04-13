@@ -88,8 +88,10 @@ typedef struct Encoder_Params_t
 	// volatile unsigned int  lastSpeedPPS;
 	// volatile int accPPSS;	// acceleration, Pulse Per Sec^2
 	volatile bool currDirection;
-	unsigned char pinIRQB;
+    /* Encoder Interrupt Pin */
 	unsigned char pinIRQ;
+    /* Encoder Interrupt B Pin */
+    unsigned char pinIRQB;
 } Encoder_Params;
 
 
@@ -107,18 +109,18 @@ public:
 	 *         	 GPIO peripheral, PWM for speed control and 
 	 * 		     interrupt handler for encoders
 	 *
-	 *  @param pinPWM: ...
-	 *  @param pinDir: ...
-	 *  @param pinIRQ: ...
-	 *  @param pinIRQB: ...
-	 *  @param encoderParams: ...
+	 *  @param pinPWM           PWM control GPIO pin
+	 *  @param pinDir           Direction control GPIO pin
+	 *  @param pinIRQ           Encoder Interrupt Pin
+	 *  @param pinIRQB          Encoder Interrupt B Pin
+	 *  @param encoderParams    Structure to hold all the relevant information for 
+     *                          the encoder interrupt handling
 	 *
-	 *  @returns 	None
+	 *  @returns None
 	 */
 	Motor(  Encoder_Params_t *encoderParams, 
             unsigned char pinPWM, unsigned char pinDir,
-		    unsigned char pinIRQ, unsigned char pinIRQB
-		  );
+		    unsigned char pinIRQ, unsigned char pinIRQB );
 
 	Encoder_Params_t* m_encoderParams;
 
@@ -564,16 +566,36 @@ private:
 class GearedMotor : public Motor
 {
 public:
+	/**
+	 *  @brief Geared Motor control Constructor.
+	 *
+	 * 	@details ...details
+	 *
+	 *  @param pinPWM           PWM control GPIO pin
+	 *  @param pinDir           Direction control GPIO pin
+	 *  @param pinIRQ           Encoder Interrupt Pin
+	 *  @param pinIRQB          Encoder Interrupt B Pin
+	 *  @param encoderParams    Structure to hold all the relevant information for 
+     *                          the encoder interrupt handling
+	 *  @param _ratio           Motor Reduction ratio or Gear ratio (Default is REDUCTION_RATIO=64)
+	 *
+	 *  @returns 	None
+	 */
 	GearedMotor(unsigned char pinPWM, unsigned char pinDir,
 				unsigned char pinIRQ, unsigned char pinIRQB,
 				Encoder_Params_t *encoderParams,
 				unsigned int _ratio = REDUCTION_RATIO);
+
 	// float getGearedAccRPMM() const;		// Acceleration, Round Per Min^2
+
 	float getGearedSpeedRPM() const;
+
 	float setGearedSpeedRPM(float gearedSpeedRPM, bool dir);
-	// direction sensitive 201208
+
 	float setGearedSpeedRPM(float gearedSpeedRPM);
+
 	unsigned int getRatio() const;
+
 	unsigned int setRatio(unsigned int ratio = REDUCTION_RATIO);
 
 private:
@@ -587,22 +609,44 @@ private:
 class MotorWheel : public GearedMotor
 { //
 public:
+	/**
+	 *  @brief Motorwheel control Constructor.
+	 *
+	 * 	@details ...details
+	 *
+	 *  @param pinPWM           PWM control GPIO pin
+	 *  @param pinDir           Direction control GPIO pin
+	 *  @param pinIRQ           Encoder Interrupt Pin
+	 *  @param pinIRQB          Encoder Interrupt B Pin
+	 *  @param encoderParams    Structure to hold all the relevant information for 
+     *                          the encoder interrupt handling
+	 *  @param ratio            Motor Reduction ratio or Gear ratio (Default is REDUCTION_RATIO=64)
+	 *  @param cirMM            Circumference of the wheel in milimeter (Default is CIRMM=314)
+	 *
+	 *  @returns None
+	 */
 	MotorWheel(unsigned char pinPWM, unsigned char pinDir,
 			   unsigned char pinIRQ, unsigned char pinIRQB,
 			   Encoder_Params_t *encoderParams,
 			   unsigned int ratio = REDUCTION_RATIO, unsigned int cirMM = CIRMM);
 
 	unsigned int getCirMM() const;
+
 	unsigned int setCirMM(unsigned int cirMM = CIRMM);
 
-	// direction sensitive 201208
 	// int getAccCMPMM() const;	// Acceleration, CM Per Min^2
 	int getSpeedCMPM() const;					 // cm/min
+
 	int setSpeedCMPM(unsigned int cm, bool dir); // preserve
+
 	int setSpeedCMPM(int cm);
+
 	// int getAccMMPSS() const;	// Acceleration, MM Per Sec^2
+
 	int getSpeedMMPS() const;					 // mm/s
+
 	int setSpeedMMPS(unsigned int mm, bool dir); // preserve
+
 	int setSpeedMMPS(int mm);
 
 private:

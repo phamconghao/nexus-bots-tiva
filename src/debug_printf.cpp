@@ -17,5 +17,5 @@ void debug_printf(const char *format, ...)
   vsnprintf(dbgMsg_buffer, DBG_MSG_SIZE, format, args);
   va_end(args);
 
-  Serial.println(dbgMsg_buffer);
+  Serial.print(dbgMsg_buffer);
 }
