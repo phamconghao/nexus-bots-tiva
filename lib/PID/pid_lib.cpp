@@ -149,7 +149,8 @@ void PID::Compute()
 	justCalced = false;
 	if (!inAuto)
     {
-		return; // if we're in manual just leave;
+        // Just leave if we're in manual mode
+		return;
     }
 
 	unsigned long now = millis();
@@ -158,24 +159,26 @@ void PID::Compute()
 	// Arduino Program you are using, it could be in 9 hours or 50 days.
 	// this is not currently addressed by this algorithm.
 
-	//...Perform PID Computations if it's time...
+	// Perform PID Computations if it's time...
 	if (now >= nextCompTime)
 	{
 		Err = *mySetpoint - *myInput;
-		// if we're using an external bias (i.e. the user used the
+		// If we're using an external bias (i.e. the user used the
 		// overloaded constructor,) then pull that in now
 		if (UsingFeedForward)
 		{
 			bias = *myBias - outMin;
 		}
 
-		// perform the PID calculation.
-		// float output = bias + kc * ((Err - lastErr)+ (taur * Err) + (taud * (Err - 2*lastErr + prevErr)));
+        // Disables all interrupts, prevents interrupts from happpening
 		noInterrupts();
+		// Perform the PID calculation:
+		//      output = bias + kc * ((Err - lastErr) + (taur * Err) + (taud * (Err - 2*lastErr + prevErr)))
 		int output = bias + (cof_A * Err - cof_B * lastErr + cof_C * prevErr);
+        // Re-enable all interrupts
 		interrupts();
 
-		// make sure the computed output is within output constraints
+		// Make sure the computed output is within output constraints
 		if (output < -outSpan)
         {
 			output = -outSpan;
@@ -185,19 +188,22 @@ void PID::Compute()
 			output = outSpan;
         }
 
+        // Update errors
 		prevErr = lastErr;
 		lastErr = Err;
 
-		// scale the output from percent span back out to a real world number
+		// Scale the output from percent span back out to a real world number
 		*myOutput = output;
 
-		nextCompTime += tSample; // determine the next time the computation
+        // Determine the next time the computation
+		nextCompTime += tSample;
 		if (nextCompTime < now)
         {
             nextCompTime = now + tSample; // should be performed
         }
 
-		justCalced = true; // set the flag that will tell the outside world that the output was just computed
+        // Set the flag that will tell the outside world that the output was just computed
+		justCalced = true;
 	}
 }
 

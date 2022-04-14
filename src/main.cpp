@@ -30,8 +30,8 @@
  *  Global Variable for Motor 1 Encoder parameters required by the Demo
  */
 Encoder_Params_t encoderWheel_1_Params = {encoderWheel_1_Handler};
-MotorWheel wheel1(M1_PWM, M1_DIR, M1_ENCA, M1_ENCB, 
-                &encoderWheel_1_Params, 
+MotorWheel wheel1(M1_PWM, M1_DIR_A, M1_DIR_B, M1_ENCA, M1_ENCB, 
+                &encoderWheel_1_Params,
                 REDUCTION_RATIO_NAMIKI_MOTOR, WHEEL_CIRC);
 
 /**************************************************************************
@@ -55,6 +55,8 @@ void pidMotorControl_demo()
     DEBUG_PRINTF("Start PID Motor Control Demo\n");
 
     wheel1.setupInterrupt();
+    wheel1.PIDEnable(KC, TAUI, TAUD, 10);
+    wheel1.setSpeedMMPS(150, DIR_ADVANCE);
 
     /* Main loop */
     for (;;)
@@ -62,8 +64,9 @@ void pidMotorControl_demo()
         DEBUG_PRINTF("EncoderWheel_1_");
         DEBUG_PRINTF("\tcurrDirection -> %d", encoderWheel_1_Params.currDirection);
         DEBUG_PRINTF("\tspeedPPS -> %d", encoderWheel_1_Params.speedPPS);
-        DEBUG_PRINTF("\t\tspeedRPM -> %d\n", wheel1.getSpeedRPM());
+        DEBUG_PRINTF("\t\tspeedMMPS -> %d\n", wheel1.getSpeedMMPS());
         delay(100);
+        wheel1.PIDRegulate();
     }
 }
 
@@ -106,14 +109,14 @@ void ledBlink_demo()
 
     uint16_t blinkCounter = 0;
 
-    pinMode(M1_DIR, OUTPUT);
+    pinMode(M1_DIR_A, OUTPUT);
 
     for (;;) 
     {
         DEBUG_PRINTF("LED Blink %d", blinkCounter ++);
-        digitalWrite(M1_DIR, LOW);
+        digitalWrite(M1_DIR_A, LOW);
         delay(500);
-        digitalWrite(M1_DIR, HIGH);
+        digitalWrite(M1_DIR_A, HIGH);
         delay(500);
     }
 }

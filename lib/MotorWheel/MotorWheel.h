@@ -34,6 +34,7 @@ V1.5	201209	Omni4WD is re-implemented, and now return value of Omni4WD::getSpeed
 
 #define DIR_ADVANCE 		HIGH
 #define DIR_BACKOFF 		LOW
+#define DIR_STOP 		    0x2
 
 #define PIN_UNDEFINED 		255
 #define REF_VOLT 			12
@@ -117,7 +118,7 @@ public:
 	 *  @returns None
 	 */
 	Motor(  Encoder_Params_t *encoderParams, 
-            unsigned char pinPWM, unsigned char pinDir,
+            unsigned char pinPWM, unsigned char pinDir_A, unsigned char pinDir_B,
 		    unsigned char pinIRQ, unsigned char pinIRQB );
 
 	Encoder_Params_t* m_encoderParams;
@@ -149,7 +150,7 @@ public:
 	unsigned char getPinPWM() const;
 
 	/**	
-	 *  @brief Get configured Direction Pin
+	 *  @brief Get configured Direction Pin channel A
 	 *
 	 *  @details ...
 	 *
@@ -159,7 +160,20 @@ public:
 	 *
 	 *  @retval (unsigned char) Motor::pinDir
 	 */
-	unsigned char getPinDir() const;
+	unsigned char getPinDir_A() const;
+
+	/**	
+	 *  @brief Get configured Direction Pin channel B
+	 *
+	 *  @details ...
+	 *
+	 *  @param None
+	 *
+	 *  @returns Configured Direction Pin
+	 *
+	 *  @retval (unsigned char) Motor::pinDir
+	 */
+	unsigned char getPinDir_B() const;
 
 	/**	
 	 *  @brief Get configured Interrupt Pin
@@ -186,6 +200,17 @@ public:
 	 *  @retval (unsigned char) Encoder_Params_t::pinIRQB
 	 */
 	unsigned char getPinIRQB() const;
+
+	/**	
+	 *  @brief Control Direction of Motor
+	 *
+	 *  @details ...
+	 *
+	 *  @param dir Control direction
+	 *
+	 *  @returns None
+	 */
+    void driveDirection(uint8_t dir);
 
 	/**	
 	 *  @brief Run motor PWM with specified control PWM value and direction
@@ -533,8 +558,10 @@ public:
 private:
 	/* PWM control GPIO pin */
 	unsigned char m_pinPWM;
-	/* Direction control GPIO pin */
-	unsigned char m_pinDir;
+	/* Direction control GPIO pin channel A */
+	unsigned char m_pinDir_A;
+	/* Direction control GPIO pin channel B*/
+	unsigned char m_pinDir_B;
 
 	// bool currDirection;		// current direction
 
@@ -579,7 +606,7 @@ public:
 	 *
 	 *  @returns 	None
 	 */
-	GearedMotor(unsigned char pinPWM, unsigned char pinDir,
+	GearedMotor(unsigned char pinPWM, unsigned char pinDir_A, unsigned char pinDir_B,
 				unsigned char pinIRQ, unsigned char pinIRQB,
 				Encoder_Params_t *encoderParams,
 				unsigned int _ratio = REDUCTION_RATIO);
@@ -623,7 +650,7 @@ public:
 	 *
 	 *  @returns None
 	 */
-	MotorWheel(unsigned char pinPWM, unsigned char pinDir,
+	MotorWheel(unsigned char pinPWM, unsigned char pinDir_A, unsigned char pinDir_B,
 			   unsigned char pinIRQ, unsigned char pinIRQB,
 			   Encoder_Params_t *encoderParams,
 			   unsigned int ratio = REDUCTION_RATIO, unsigned int cirMM = CIRMM);

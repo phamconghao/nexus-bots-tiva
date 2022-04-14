@@ -1,11 +1,11 @@
 #include <MotorWheel.h>
 
 Motor::Motor(   Encoder_Params_t *encoderParams,
-                unsigned char pinPWM, unsigned char pinDir,
+                unsigned char pinPWM, unsigned char pinDir_A, unsigned char pinDir_B,
 			    unsigned char pinIRQ, unsigned char pinIRQB
 			 )
 	: PID(&speedRPMInput, &speedRPMOutput, &speedRPMDesired, KC, TAUI, TAUD),
-	  m_encoderParams(encoderParams), m_pinPWM(pinPWM), m_pinDir(pinDir)
+	  m_encoderParams(encoderParams), m_pinPWM(pinPWM), m_pinDir_A(pinDir_A), m_pinDir_B(pinDir_B)
 {
 	m_encoderParams->pinIRQ = pinIRQ;
 	m_encoderParams->pinIRQB = pinIRQB;
@@ -13,7 +13,8 @@ Motor::Motor(   Encoder_Params_t *encoderParams,
 #if defined(__TM4C123GH6PM__)   /* For Tiva C */
 	/* GPIO Pin configuration */
 	pinMode(m_pinPWM, OUTPUT);
-	pinMode(m_pinDir, OUTPUT);
+	pinMode(m_pinDir_A, OUTPUT);
+    pinMode(m_pinDir_B, OUTPUT);
 	/* Interrupt Pin configuration */
 	pinMode(m_encoderParams->pinIRQ, INPUT_PULLUP);
 #else                           /* For Arduino */
@@ -49,9 +50,14 @@ unsigned char Motor::getPinPWM() const
 	return m_pinPWM;
 }
 
-unsigned char Motor::getPinDir() const
+unsigned char Motor::getPinDir_A() const
 {
-	return m_pinDir;
+	return m_pinDir_A;
+}
+
+unsigned char Motor::getPinDir_B() const
+{
+	return m_pinDir_B;
 }
 
 unsigned char Motor::getPinIRQ() const
@@ -64,6 +70,25 @@ unsigned char Motor::getPinIRQB() const
 	return m_encoderParams->pinIRQB;
 }
 
+void Motor::driveDirection(uint8_t dir)
+{
+    if (DIR_ADVANCE == dir)             // Motor turning forwards
+    {
+        digitalWrite(m_pinDir_A, LOW);
+        digitalWrite(m_pinDir_B, HIGH);
+    }
+    else if (DIR_BACKOFF == dir)        // Motor turning backwards
+    {
+        digitalWrite(m_pinDir_A, HIGH);
+        digitalWrite(m_pinDir_B, LOW);
+    }
+    else                                // Motor stop
+    {
+        digitalWrite(m_pinDir_A, LOW);
+        digitalWrite(m_pinDir_B, LOW);
+    }
+}
+
 unsigned int Motor::runPWM(unsigned int PWM, bool dir, bool saveDir)
 {
 	/* Pass PWM value to Motor::speedPWM */
@@ -73,9 +98,12 @@ unsigned int Motor::runPWM(unsigned int PWM, bool dir, bool saveDir)
 	{
 		desiredDirection = dir;
 	}
+
+	// digitalWrite(m_pinDir_A, dir); 
+    // TODO: add and test driveDirection() function
+    driveDirection(dir);
 	/* Write PWM and direction to GPIO */
 	analogWrite(m_pinPWM, PWM);
-	digitalWrite(m_pinDir, dir);
 	return speedPWM;
 }
 
@@ -192,24 +220,27 @@ bool Motor::PIDReset()
 
 bool Motor::PIDRegulate(bool doRegulate)
 {
-	if (PIDGetStatus() == false)
+	if (PIDGetStatus() == false) // IF PID was disabled
 	{
 		return false;
 	}
-	if (getPinIRQB() != PIN_UNDEFINED && getDesiredDir() != getCurrDir())
+
+	if ((getPinIRQB() != PIN_UNDEFINED) && (getDesiredDir() != getCurrDir()))
 	{
-		speedRPMInput = -SPEEDPPS2SPEEDRPM(m_encoderParams->speedPPS);
+		speedRPMInput = - SPEEDPPS2SPEEDRPM(m_encoderParams->speedPPS);
 	}
 	else
 	{
 		speedRPMInput = SPEEDPPS2SPEEDRPM(m_encoderParams->speedPPS);
 	}
-
+    // Start PID Computation
 	PID::Compute();
+    // Do regulate
 	if (doRegulate && PID::JustCalculated())
 	{
 		speed2DutyCycle += speedRPMOutput;
 
+        // Limiting speed2DutyCycle value
 		if (speed2DutyCycle >= MAX_SPEEDRPM)
 		{
 			speed2DutyCycle = MAX_SPEEDRPM;
@@ -218,8 +249,11 @@ bool Motor::PIDRegulate(bool doRegulate)
 		{
 			speed2DutyCycle = -MAX_SPEEDRPM;
 		}
+
+        // Run PWM 
 		if (speed2DutyCycle >= 0)
 		{
+            // Run PWM with re-mapped speed2DutyCycle from (0-MAX_SPEEDRPM) to (0-MAX_PWM) range
 			runPWM(map(speed2DutyCycle, 0, MAX_SPEEDRPM, 0, MAX_PWM), getDesiredDir(), false);
 		}
 		else
@@ -228,6 +262,7 @@ bool Motor::PIDRegulate(bool doRegulate)
 		}
 		return true;
 	}
+
 	return false;
 }
 
@@ -309,10 +344,10 @@ void Motor::debugger() const
     // DEBUG_PRINTF("pulses            -> %ld", m_encoderParams->pulses);
 }
 
-GearedMotor::GearedMotor(unsigned char pinPWM, unsigned char pinDir,
+GearedMotor::GearedMotor(unsigned char pinPWM, unsigned char pinDir_A, unsigned char pinDir_B,
 						 unsigned char pinIRQ, unsigned char pinIRQB,
 						 Encoder_Params_t *encoderParams, unsigned int ratio) 
-            : Motor(encoderParams, pinPWM, pinDir, pinIRQ, pinIRQB), _ratio(ratio)
+            : Motor(encoderParams, pinPWM, pinDir_A, pinDir_B, pinIRQ, pinIRQB), _ratio(ratio)
 {
 	;
 }
@@ -346,11 +381,11 @@ float GearedMotor::setGearedSpeedRPM(float gearedSpeedRPM)
 	return getGearedSpeedRPM();
 }
 
-MotorWheel::MotorWheel(unsigned char pinPWM, unsigned char pinDir,
+MotorWheel::MotorWheel(unsigned char pinPWM, unsigned char pinDir_A, unsigned char pinDir_B,
 					   unsigned char pinIRQ, unsigned char pinIRQB,
 					   Encoder_Params_t *encoderParams,
 					   unsigned int ratio, unsigned int cirMM) 
-            : GearedMotor(pinPWM, pinDir, pinIRQ, pinIRQB, encoderParams, ratio), _cirMM(cirMM)
+            : GearedMotor(pinPWM, pinDir_A, pinDir_B, pinIRQ, pinIRQB, encoderParams, ratio), _cirMM(cirMM)
 {
 	;
 }
