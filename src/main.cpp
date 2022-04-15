@@ -17,6 +17,19 @@
 /* Control Include Files: */
 #include <hw_handler.h>
 #include <MotorWheel.h>
+// ---------------------------
+#include <stdint.h>
+#include <stdbool.h>
+#include "inc/hw_ints.h"
+#include "inc/hw_memmap.h"
+#include "inc/hw_types.h"
+#include "driverlib/debug.h"
+#include "driverlib/gpio.h"
+#include "driverlib/interrupt.h"
+#include "driverlib/rom_map.h"
+#include "driverlib/rom.h"
+#include "driverlib/sysctl.h"
+#include "driverlib/timer.h"
 
 /**************************************************************************
  *                           Local Declarations
@@ -35,7 +48,7 @@ MotorWheel wheel1(M1_PWM, M1_DIR_A, M1_DIR_B, M1_ENCA, M1_ENCB,
                 REDUCTION_RATIO_NAMIKI_MOTOR, WHEEL_CIRC);
 
 /**************************************************************************
- *                         Nexus Bot Demo Functions
+ *                      Nexus Bot Demo MAIN Functions
  **************************************************************************/
 void main_program()
 {
@@ -47,12 +60,60 @@ void main_program()
     // ledBlinkPWM_demo();
     // externalInterrupt_demo();
     // dbgPrintf_demo();
-    pidMotorControl_demo();
+    // pidMotorControl_demo();
+    tmrInterrupt_demo();
+}
+
+/**************************************************************************
+ *                     Timer Interrupt Demo Functions
+ **************************************************************************/
+void Timer5InterruptDemo_Handler()
+{
+    MAP_TimerIntClear(TIMER1_BASE, TIMER_TIMA_TIMEOUT);
+    digitalWrite(TIVA_BLUE_LED, !(digitalRead(TIVA_BLUE_LED)));
+    DEBUG_PRINTF("Timer Interrupt Occured!");
+    DEBUG_PRINTF("\tLED State %d\n", digitalRead(TIVA_BLUE_LED));
+}
+
+void Timer5Interrupt_init(void (*p_TmrHandler)(void))
+{
+    MAP_SysCtlPeripheralEnable(SYSCTL_PERIPH_TIMER1);
+    MAP_TimerConfigure(TIMER1_BASE, TIMER_CFG_PERIODIC);
+    MAP_TimerLoadSet(TIMER1_BASE, TIMER_A, MAP_SysCtlClockGet() / 10);
+    TimerIntRegister(TIMER1_BASE, TIMER_A, p_TmrHandler);
+    MAP_TimerIntEnable(TIMER1_BASE, TIMER_TIMA_TIMEOUT);
+    MAP_TimerEnable(TIMER1_BASE, TIMER_A);
+}
+
+void tmrInterrupt_demo(void)
+{
+    DEBUG_PRINTF("Start Timer Interrupt Demo\n");
+
+    pinMode(TIVA_BLUE_LED, OUTPUT);
+
+    Timer5Interrupt_init(&Timer5InterruptDemo_Handler);
+
+    /* Main loop */
+    for (;;)
+    {
+        ;
+    }
+}
+
+/**************************************************************************
+ *                     PID Motor Control Demo Functions
+ **************************************************************************/
+void Timer5InterruptPID_Handler()
+{
+    MAP_TimerIntClear(TIMER1_BASE, TIMER_TIMA_TIMEOUT);
+    wheel1.PIDRegulate();
 }
 
 void pidMotorControl_demo()
 {
     DEBUG_PRINTF("Start PID Motor Control Demo\n");
+
+    Timer5Interrupt_init(&Timer5InterruptPID_Handler);
 
     wheel1.setupInterrupt();
     wheel1.PIDEnable(KC, TAUI, TAUD, 10);
@@ -66,10 +127,13 @@ void pidMotorControl_demo()
         DEBUG_PRINTF("\tspeedPPS -> %d", encoderWheel_1_Params.speedPPS);
         DEBUG_PRINTF("\t\tspeedMMPS -> %d\n", wheel1.getSpeedMMPS());
         delay(100);
-        wheel1.PIDRegulate();
+        // wheel1.PIDRegulate();
     }
 }
 
+/**************************************************************************
+ *                     Serial Debug Printf Demo Functions
+ **************************************************************************/
 void dbgPrintf_demo()
 {
     /* Init */
@@ -88,6 +152,9 @@ void dbgPrintf_demo()
     }
 }
 
+/**************************************************************************
+ *                   External IO Interrupt Demo Functions
+ **************************************************************************/
 void externalInterrupt_demo()
 {
     /* Init */
@@ -103,6 +170,9 @@ void externalInterrupt_demo()
     }
 }
 
+/**************************************************************************
+ *                     LED Blink Demo Functions
+ **************************************************************************/
 void ledBlink_demo()
 {
     DEBUG_PRINTF("Start LED Blink counter Demo");
@@ -121,6 +191,9 @@ void ledBlink_demo()
     }
 }
 
+/**************************************************************************
+ *                    LED Blink with PWM Demo Functions
+ **************************************************************************/
 void ledBlinkPWM_demo()
 {
     /* Init */
