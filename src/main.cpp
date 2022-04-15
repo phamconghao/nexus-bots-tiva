@@ -64,25 +64,29 @@ void main_program()
     tmrInterrupt_demo();
 }
 
-/**************************************************************************
- *                     Timer Interrupt Demo Functions
- **************************************************************************/
-void Timer5InterruptDemo_Handler()
+void attachTimerInterrupt(uint32_t ui32Base, uint32_t ui32Peripheral, void (*p_TmrHandler)(), unsigned int tmrFreq)
 {
-    MAP_TimerIntClear(TIMER1_BASE, TIMER_TIMA_TIMEOUT);
+    // Timer Period calculation
+    unsigned long ulPeriod;
+    ulPeriod = (SysCtlClockGet() / tmrFreq);
+    // Timer interrupt Configuration
+    MAP_SysCtlPeripheralEnable(ui32Peripheral);
+    MAP_TimerConfigure(ui32Base, TIMER_CFG_PERIODIC);
+    MAP_TimerLoadSet(ui32Base, TIMER_A, ulPeriod - 1);
+    TimerIntRegister(ui32Base, TIMER_A, p_TmrHandler);
+    MAP_TimerIntEnable(ui32Base, TIMER_TIMA_TIMEOUT);
+    MAP_TimerEnable(ui32Base, TIMER_A);
+}
+
+/**************************************************************************
+ *                Timer Interrupt Demo Functions (Timer 5)
+ **************************************************************************/
+void TimerInterruptDemo_Handler()
+{
+    MAP_TimerIntClear(TIMER5_BASE, TIMER_TIMA_TIMEOUT);
     digitalWrite(TIVA_BLUE_LED, !(digitalRead(TIVA_BLUE_LED)));
     DEBUG_PRINTF("Timer Interrupt Occured!");
     DEBUG_PRINTF("\tLED State %d\n", digitalRead(TIVA_BLUE_LED));
-}
-
-void Timer5Interrupt_init(void (*p_TmrHandler)(void))
-{
-    MAP_SysCtlPeripheralEnable(SYSCTL_PERIPH_TIMER1);
-    MAP_TimerConfigure(TIMER1_BASE, TIMER_CFG_PERIODIC);
-    MAP_TimerLoadSet(TIMER1_BASE, TIMER_A, MAP_SysCtlClockGet() / 10);
-    TimerIntRegister(TIMER1_BASE, TIMER_A, p_TmrHandler);
-    MAP_TimerIntEnable(TIMER1_BASE, TIMER_TIMA_TIMEOUT);
-    MAP_TimerEnable(TIMER1_BASE, TIMER_A);
 }
 
 void tmrInterrupt_demo(void)
@@ -91,7 +95,7 @@ void tmrInterrupt_demo(void)
 
     pinMode(TIVA_BLUE_LED, OUTPUT);
 
-    Timer5Interrupt_init(&Timer5InterruptDemo_Handler);
+    attachTimerInterrupt(TIMER5_BASE, SYSCTL_PERIPH_TIMER5, &TimerInterruptDemo_Handler, 1);
 
     /* Main loop */
     for (;;)
@@ -105,19 +109,20 @@ void tmrInterrupt_demo(void)
  **************************************************************************/
 void Timer5InterruptPID_Handler()
 {
-    MAP_TimerIntClear(TIMER1_BASE, TIMER_TIMA_TIMEOUT);
+    MAP_TimerIntClear(PID_TIMER_BASE, TIMER_TIMA_TIMEOUT);
     wheel1.PIDRegulate();
 }
 
 void pidMotorControl_demo()
 {
     DEBUG_PRINTF("Start PID Motor Control Demo\n");
-
-    Timer5Interrupt_init(&Timer5InterruptPID_Handler);
+    DEBUG_PRINTF("Start PID Motor Control Demo\n");
+    
+    attachTimerInterrupt(PID_TIMER_BASE, PID_TIMER_SYSCTL_PERIPH, &TimerInterruptDemo_Handler, 1);
 
     wheel1.setupInterrupt();
     wheel1.PIDEnable(KC, TAUI, TAUD, 10);
-    wheel1.setSpeedMMPS(150, DIR_ADVANCE);
+    wheel1.setSpeedMMPS(250, DIR_ADVANCE);
 
     /* Main loop */
     for (;;)
