@@ -27,14 +27,35 @@
 /**************************************************************************
  *                         Functions Prototype
  **************************************************************************/
-void ledBlink_demo();
-void ledBlinkPWM_demo();
-void externalInterrupt_demo();
-void dbgPrintf_demo();
-void pidMotorControl_demo();
+/**	
+ *  @brief Attach Function to Timer interrupt
+ *
+ *  @details ...details
+ *
+ *  @param ui32Base        Hardware base address
+ *  @param ui32Peripheral  Hardware Peripheral ID
+ *  @param p_TmrHander     Interrupt Hander function
+ *  @param tmrFreq         Interrupt Frequency in Hz
+ *
+ *  @returns None
+ */
+void attachTimerInterrupt(uint32_t ui32Base, uint32_t ui32Peripheral, void (*p_TmrHandler)(void), unsigned int tmrFreq);
 
-void Timer5InterruptDemo_Handler(void);
-void Timer5Interrupt_init(void (*p_TmrHandler)(void));
+/* LED Blink Demo Functions */
+void ledBlink_demo();
+/* LED Blink with PWM Demo Functions */
+void ledBlinkPWM_demo();
+/* External IO Interrupt Demo Functions */
+void externalInterrupt_demo();
+/* Serial Debug Printf Demo Functions */
+void dbgPrintf_demo();
+
+/* PID Motor Control Demo Functions */
+void pidMotorControl_demo();
+void PIDTimerInterrupt_Handler();
+
+/* Timer Interrupt Demo Functions (Timer 5) */
 void tmrInterrupt_demo(void);
+void TimerInterruptDemo_Handler(uint32_t ui32Base);
 
 #endif

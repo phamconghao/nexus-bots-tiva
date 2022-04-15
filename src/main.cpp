@@ -60,15 +60,14 @@ void main_program()
     // ledBlinkPWM_demo();
     // externalInterrupt_demo();
     // dbgPrintf_demo();
-    // pidMotorControl_demo();
-    tmrInterrupt_demo();
+    pidMotorControl_demo();
+    // tmrInterrupt_demo();
 }
 
 void attachTimerInterrupt(uint32_t ui32Base, uint32_t ui32Peripheral, void (*p_TmrHandler)(), unsigned int tmrFreq)
 {
     // Timer Period calculation
-    unsigned long ulPeriod;
-    ulPeriod = (SysCtlClockGet() / tmrFreq);
+    unsigned long ulPeriod = SysCtlClockGet() / tmrFreq;
     // Timer interrupt Configuration
     MAP_SysCtlPeripheralEnable(ui32Peripheral);
     MAP_TimerConfigure(ui32Base, TIMER_CFG_PERIODIC);
@@ -79,7 +78,39 @@ void attachTimerInterrupt(uint32_t ui32Base, uint32_t ui32Peripheral, void (*p_T
 }
 
 /**************************************************************************
- *                Timer Interrupt Demo Functions (Timer 5)
+ *                     PID Motor Control Demo
+ **************************************************************************/
+void PIDTimerInterrupt_Handler()
+{
+    MAP_TimerIntClear(PID_TIMER_BASE, TIMER_TIMA_TIMEOUT);
+    wheel1.PIDRegulate();
+}
+
+void pidMotorControl_demo()
+{
+    DEBUG_PRINTF("Start PID Motor Control Demo\n");
+    DEBUG_PRINTF("Start PID Motor Control Demo\n");
+    
+    /* PID Regulate periodic with SAMPLETIME = 5ms or 200Hz freq */
+    attachTimerInterrupt(PID_TIMER_BASE, PID_TIMER_SYSCTL_PERIPH, &PIDTimerInterrupt_Handler, 1000*(1/SAMPLETIME));
+
+    wheel1.setupInterrupt();
+    wheel1.PIDEnable(KC, TAUI, TAUD, SAMPLETIME);
+    wheel1.setSpeedMMPS(100, DIR_ADVANCE);
+
+    /* Main loop */
+    for (;;)
+    {
+        DEBUG_PRINTF("EncoderWheel_1_");
+        DEBUG_PRINTF("\tcurrDirection -> %d", encoderWheel_1_Params.currDirection);
+        DEBUG_PRINTF("\tspeedPPS -> %d", encoderWheel_1_Params.speedPPS);
+        DEBUG_PRINTF("\t\tspeedMMPS -> %d\n", wheel1.getSpeedMMPS());
+        delay(100);
+    }
+}
+
+/**************************************************************************
+ *                Timer Interrupt Demo (Timer 5)
  **************************************************************************/
 void TimerInterruptDemo_Handler()
 {
@@ -105,39 +136,7 @@ void tmrInterrupt_demo(void)
 }
 
 /**************************************************************************
- *                     PID Motor Control Demo Functions
- **************************************************************************/
-void Timer5InterruptPID_Handler()
-{
-    MAP_TimerIntClear(PID_TIMER_BASE, TIMER_TIMA_TIMEOUT);
-    wheel1.PIDRegulate();
-}
-
-void pidMotorControl_demo()
-{
-    DEBUG_PRINTF("Start PID Motor Control Demo\n");
-    DEBUG_PRINTF("Start PID Motor Control Demo\n");
-    
-    attachTimerInterrupt(PID_TIMER_BASE, PID_TIMER_SYSCTL_PERIPH, &TimerInterruptDemo_Handler, 1);
-
-    wheel1.setupInterrupt();
-    wheel1.PIDEnable(KC, TAUI, TAUD, 10);
-    wheel1.setSpeedMMPS(250, DIR_ADVANCE);
-
-    /* Main loop */
-    for (;;)
-    {
-        DEBUG_PRINTF("EncoderWheel_1_");
-        DEBUG_PRINTF("\tcurrDirection -> %d", encoderWheel_1_Params.currDirection);
-        DEBUG_PRINTF("\tspeedPPS -> %d", encoderWheel_1_Params.speedPPS);
-        DEBUG_PRINTF("\t\tspeedMMPS -> %d\n", wheel1.getSpeedMMPS());
-        delay(100);
-        // wheel1.PIDRegulate();
-    }
-}
-
-/**************************************************************************
- *                     Serial Debug Printf Demo Functions
+ *                     Serial Debug Printf Demo
  **************************************************************************/
 void dbgPrintf_demo()
 {
@@ -158,7 +157,7 @@ void dbgPrintf_demo()
 }
 
 /**************************************************************************
- *                   External IO Interrupt Demo Functions
+ *                   External IO Interrupt Demo
  **************************************************************************/
 void externalInterrupt_demo()
 {
@@ -176,7 +175,7 @@ void externalInterrupt_demo()
 }
 
 /**************************************************************************
- *                     LED Blink Demo Functions
+ *                     LED Blink Demo
  **************************************************************************/
 void ledBlink_demo()
 {
@@ -197,7 +196,7 @@ void ledBlink_demo()
 }
 
 /**************************************************************************
- *                    LED Blink with PWM Demo Functions
+ *                    LED Blink with PWM Demo
  **************************************************************************/
 void ledBlinkPWM_demo()
 {
