@@ -80,32 +80,51 @@ void attachTimerInterrupt(uint32_t ui32Base, uint32_t ui32Peripheral, void (*p_T
 /**************************************************************************
  *                     PID Motor Control Demo
  **************************************************************************/
-void PIDTimerInterrupt_Handler()
+void PID_TimerInterrupt_Handler()
 {
     MAP_TimerIntClear(PID_TIMER_BASE, TIMER_TIMA_TIMEOUT);
     wheel1.PIDRegulate();
 }
 
+// void DEBUGGER_TimerInterrupt_Handler()
+// {
+//     MAP_TimerIntClear(TIMER4_BASE, TIMER_TIMA_TIMEOUT);
+//     DEBUG_PRINTF("EncoderWheel_1_");
+//     DEBUG_PRINTF("\tcurrDirection -> %d", encoderWheel_1_Params.currDirection);
+//     DEBUG_PRINTF("\tspeedPPS -> %d", encoderWheel_1_Params.speedPPS);
+//     DEBUG_PRINTF("\t\tspeedMMPS -> %d\n", wheel1.getSpeedMMPS());
+// }
+
 void pidMotorControl_demo()
 {
     DEBUG_PRINTF("Start PID Motor Control Demo\n");
-    DEBUG_PRINTF("Start PID Motor Control Demo\n");
     
     /* PID Regulate periodic with SAMPLETIME = 5ms or 200Hz freq */
-    attachTimerInterrupt(PID_TIMER_BASE, PID_TIMER_SYSCTL_PERIPH, &PIDTimerInterrupt_Handler, 1000*(1/SAMPLETIME));
+    attachTimerInterrupt(PID_TIMER_BASE, PID_TIMER_SYSCTL_PERIPH, &PID_TimerInterrupt_Handler, 200);
+
+    // attachTimerInterrupt(TIMER4_BASE, SYSCTL_PERIPH_TIMER4, &DEBUGGER_TimerInterrupt_Handler, 5);
 
     wheel1.setupInterrupt();
     wheel1.PIDEnable(KC, TAUI, TAUD, SAMPLETIME);
-    wheel1.setSpeedMMPS(100, DIR_ADVANCE);
 
     /* Main loop */
     for (;;)
     {
-        DEBUG_PRINTF("EncoderWheel_1_");
-        DEBUG_PRINTF("\tcurrDirection -> %d", encoderWheel_1_Params.currDirection);
-        DEBUG_PRINTF("\tspeedPPS -> %d", encoderWheel_1_Params.speedPPS);
-        DEBUG_PRINTF("\t\tspeedMMPS -> %d\n", wheel1.getSpeedMMPS());
-        delay(100);
+        DEBUG_PRINTF("Motor run ADVANCE MMPS: 100 in 3sec\n");
+        wheel1.setSpeedMMPS(100, DIR_ADVANCE);
+        delay(3000);
+        DEBUG_PRINTF("Motor run ADVANCE MMPS: 200 in 3sec\n");
+        wheel1.setSpeedMMPS(200, DIR_ADVANCE);
+        delay(3000);
+        DEBUG_PRINTF("Motor run BACKOFF MMPS: 200 in 3sec\n");
+        wheel1.setSpeedMMPS(200, DIR_BACKOFF);
+        delay(3000);
+        DEBUG_PRINTF("Motor run BACKOFF MMPS: 50 in 3sec\n");
+        wheel1.setSpeedMMPS(50, DIR_BACKOFF);
+        delay(2000); 
+        DEBUG_PRINTF("Motor Stop in 3sec\n");
+        wheel1.setSpeedMMPS(0, DIR_ADVANCE);
+        delay(3000);
     }
 }
 

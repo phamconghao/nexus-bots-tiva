@@ -52,10 +52,10 @@ void dbgPrintf_demo();
 
 /* PID Motor Control Demo Functions */
 void pidMotorControl_demo();
-void PIDTimerInterrupt_Handler();
+void PID_TimerInterrupt_Handler();
 
 /* Timer Interrupt Demo Functions (Timer 5) */
 void tmrInterrupt_demo(void);
-void TimerInterruptDemo_Handler(uint32_t ui32Base);
+void TimerInterruptDemo_Handler();
 
 #endif
