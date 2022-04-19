@@ -1,48 +1,54 @@
 #include <Omni3WD.h>
 
-Omni3WD::Omni3WD(MotorWheel *wheelBack, MotorWheel *wheelRight, MotorWheel *wheelLeft) : _wheelBack(wheelBack), _wheelRight(wheelRight), _wheelLeft(wheelLeft)
+Omni3WD::Omni3WD(MotorWheel *wheelBack, MotorWheel *wheelRight, MotorWheel *wheelLeft) 
+    : m_wheelBack(wheelBack), m_wheelRight(wheelRight), m_wheelLeft(wheelLeft)
 {
-	setSwitchMotorsStat(MOTORS_BRL);
+	setSwitchMotorsStat(MOTORS_SWITCH_STAT::BRL);
 }
 
 unsigned char Omni3WD::getSwitchMotorsStat() const
 {
-	return _switchMotorsStat;
+	return m_switchMotorsStat;
 }
+
 unsigned char Omni3WD::setSwitchMotorsStat(unsigned char switchMotorsStat)
 {
-	if (MOTORS_BRL <= switchMotorsStat && switchMotorsStat <= MOTORS_RLB)
-		_switchMotorsStat = switchMotorsStat;
+	if ((MOTORS_SWITCH_STAT::BRL <= switchMotorsStat) && (switchMotorsStat <= MOTORS_SWITCH_STAT::RLB))
+		m_switchMotorsStat = switchMotorsStat;
 	return getSwitchMotorsStat();
 }
 
 unsigned char Omni3WD::switchMotorsLeft()
-{ // --> BRL --> LBR --> RLB
-	if (getSwitchMotorsStat() == MOTORS_RLB)
-		setSwitchMotorsStat(MOTORS_BRL);
+{ 
+    // --> BRL --> LBR --> RLB
+	if (getSwitchMotorsStat() == MOTORS_SWITCH_STAT::RLB)
+		setSwitchMotorsStat(MOTORS_SWITCH_STAT::BRL);
 	else
 		setSwitchMotorsStat(getSwitchMotorsStat() + 1);
-	MotorWheel *temp = _wheelBack;
-	_wheelBack = _wheelRight;
-	_wheelRight = _wheelLeft;
-	_wheelLeft = temp;
+	MotorWheel *temp = m_wheelBack;
+	m_wheelBack = m_wheelRight;
+	m_wheelRight = m_wheelLeft;
+	m_wheelLeft = temp;
 	return getSwitchMotorsStat();
 }
+
 unsigned char Omni3WD::switchMotorsRight()
-{ // <-- BRL <-- LBR <--RLB
-	if (getSwitchMotorsStat() == MOTORS_BRL)
-		setSwitchMotorsStat(MOTORS_RLB);
+{ 
+    // <-- BRL <-- LBR <--RLB
+	if (getSwitchMotorsStat() == MOTORS_SWITCH_STAT::BRL)
+		setSwitchMotorsStat(MOTORS_SWITCH_STAT::RLB);
 	else
 		setSwitchMotorsStat(getSwitchMotorsStat() - 1);
-	MotorWheel *temp = _wheelBack;
-	_wheelBack = _wheelLeft;
-	_wheelLeft = _wheelRight;
-	_wheelRight = temp;
+	MotorWheel *temp = m_wheelBack;
+	m_wheelBack = m_wheelLeft;
+	m_wheelLeft = m_wheelRight;
+	m_wheelRight = temp;
 	return getSwitchMotorsStat();
 }
+
 unsigned char Omni3WD::switchMotorsReset()
 {
-	while (getSwitchMotorsStat() != MOTORS_BRL)
+	while (getSwitchMotorsStat() != MOTORS_SWITCH_STAT::BRL)
 	{
 		switchMotorsLeft();
 	}
@@ -51,14 +57,15 @@ unsigned char Omni3WD::switchMotorsReset()
 
 unsigned char Omni3WD::getCarStat() const
 {
-	return _carStat;
+	return m_carStat;
 }
+
 unsigned char Omni3WD::setCarStat(unsigned char carStat)
 {
-	if (STAT_UNKNOWN <= carStat && carStat <= STAT_ROTATERIGHT)
-		return _carStat = carStat;
+	if ((MOVEMENT_STAT::UNKNOWN <= carStat) && carStat <= MOVEMENT_STAT::ROTATERIGHT)
+		return m_carStat = carStat;
 	else
-		return STAT_UNKNOWN;
+		return MOVEMENT_STAT::UNKNOWN;
 }
 
 unsigned int Omni3WD::setMotorAll(unsigned int speedMMPS, bool dir)
@@ -68,81 +75,73 @@ unsigned int Omni3WD::setMotorAll(unsigned int speedMMPS, bool dir)
 	wheelLeftSetSpeedMMPS(speedMMPS, dir);
 	return wheelBackGetSpeedMMPS();
 }
+
 unsigned int Omni3WD::setMotorAllStop()
 {
 	return setMotorAll(0, DIR_ADVANCE);
 }
+
 unsigned int Omni3WD::setMotorAllAdvance(unsigned int speedMMPS)
 {
 	return setMotorAll(speedMMPS, DIR_ADVANCE);
 }
+
 unsigned int Omni3WD::setMotorAllBackoff(unsigned int speedMMPS)
 {
 	return setMotorAll(speedMMPS, DIR_BACKOFF);
 }
+
 unsigned int Omni3WD::setCarStop()
 {
-	setCarStat(STAT_STOP);
+	setCarStat(MOVEMENT_STAT::STOP);
 	return setMotorAll(0, DIR_ADVANCE);
 }
+
 unsigned int Omni3WD::setCarAdvance(unsigned int speedMMPS)
 {
-	setCarStat(STAT_ADVANCE);
+	setCarStat(MOVEMENT_STAT::ADVANCE);
 	wheelBackSetSpeedMMPS(0, DIR_ADVANCE);
 	wheelRightSetSpeedMMPS(speedMMPS, DIR_BACKOFF);
 	wheelLeftSetSpeedMMPS(speedMMPS, DIR_ADVANCE);
 	return wheelRightGetSpeedMMPS();
 }
+
 unsigned int Omni3WD::setCarBackoff(unsigned int speedMMPS)
 {
-	setCarStat(STAT_BACKOFF);
+	setCarStat(MOVEMENT_STAT::BACKOFF);
 	wheelBackSetSpeedMMPS(0, DIR_ADVANCE);
 	wheelRightSetSpeedMMPS(speedMMPS, DIR_ADVANCE);
 	wheelLeftSetSpeedMMPS(speedMMPS, DIR_BACKOFF);
 	return wheelRightGetSpeedMMPS();
 }
-/*
-unsigned int Omni3WD::setCarLeft(unsigned int speedMMPS) {
-	setCarStat(STAT_LEFT);
-	//wheelBackSetSpeedMMPS(speedMMPS+(speedMMPS>>1),DIR_ADVANCE);
-	wheelBackSetSpeedMMPS(speedMMPS<<1,DIR_ADVANCE);
-	wheelRightSetSpeedMMPS(speedMMPS,DIR_BACKOFF);
-	wheelLeftSetSpeedMMPS(speedMMPS,DIR_BACKOFF);
-	return wheelRightGetSpeedMMPS();
-}
-unsigned int Omni3WD::setCarRight(unsigned int speedMMPS) {
-	setCarStat(STAT_RIGHT);
-	//wheelBackSetSpeedMMPS(speedMMPS+(speedMMPS>>1),DIR_BACKOFF);
-	wheelBackSetSpeedMMPS(speedMMPS<<1,DIR_BACKOFF);
-	wheelRightSetSpeedMMPS(speedMMPS,DIR_ADVANCE);
-	wheelLeftSetSpeedMMPS(speedMMPS,DIR_ADVANCE);
-	return wheelRightGetSpeedMMPS();
-}
- */
+
 unsigned int Omni3WD::setCarLeft(unsigned int speedMMPS)
 {
-	setCarStat(STAT_LEFT);
+	setCarStat(MOVEMENT_STAT::LEFT);
 	wheelBackSetSpeedMMPS(speedMMPS, DIR_ADVANCE);
 	wheelRightSetSpeedMMPS(speedMMPS >> 1, DIR_BACKOFF);
 	wheelLeftSetSpeedMMPS(speedMMPS >> 1, DIR_BACKOFF);
 	return wheelBackGetSpeedMMPS();
 }
+
 unsigned int Omni3WD::setCarRight(unsigned int speedMMPS)
 {
-	setCarStat(STAT_RIGHT);
+	setCarStat(MOVEMENT_STAT::RIGHT);
 	wheelBackSetSpeedMMPS(speedMMPS, DIR_BACKOFF);
 	wheelRightSetSpeedMMPS(speedMMPS >> 1, DIR_ADVANCE);
 	wheelLeftSetSpeedMMPS(speedMMPS >> 1, DIR_ADVANCE);
 	return wheelBackGetSpeedMMPS();
 }
+
 unsigned int Omni3WD::setCarRotateLeft(unsigned int speedMMPS)
 {
-	setCarStat(STAT_ROTATELEFT);
+	setCarStat(MOVEMENT_STAT::ROTATELEFT);
 	return setMotorAllBackoff(speedMMPS);
 }
+
 unsigned int Omni3WD::setCarRotateRight(unsigned int speedMMPS)
 {
-	setCarStat(STAT_ROTATERIGHT);
+	setCarStat(MOVEMENT_STAT::ROTATERIGHT);
 	return setMotorAllAdvance(speedMMPS);
 }
 
@@ -159,35 +158,36 @@ unsigned int Omni3WD::getCarSpeedMMPS() const
 	}
 	return speedMMPS;
 }
+
 unsigned int Omni3WD::setCarSpeedMMPS(unsigned int speedMMPS, unsigned int ms)
 {
 	unsigned int carStat = getCarStat();
 	int currSpeed = getCarSpeedMMPS(); //
 	int speedTemp = speedMMPS;
-	unsigned int (Omni3WD::*carAction)(unsigned int speedMMPS);
+	// unsigned int (Omni3WD::*carAction)(unsigned int speedMMPS);
 	switch (carStat)
 	{
-	case STAT_UNKNOWN: // no break here
-	case STAT_STOP:
-		return currSpeed;
-	case STAT_ADVANCE:
-		carAction = &Omni3WD::setCarAdvance;
-		break;
-	case STAT_BACKOFF:
-		carAction = &Omni3WD::setCarBackoff;
-		break;
-	case STAT_LEFT:
-		carAction = &Omni3WD::setCarLeft;
-		break;
-	case STAT_RIGHT:
-		carAction = &Omni3WD::setCarRight;
-		break;
-	case STAT_ROTATELEFT:
-		carAction = &Omni3WD::setCarRotateLeft;
-		break;
-	case STAT_ROTATERIGHT:
-		carAction = &Omni3WD::setCarRotateRight;
-		break;
+        case MOVEMENT_STAT::UNKNOWN: // no break here
+        case MOVEMENT_STAT::STOP:
+            return currSpeed;
+        case MOVEMENT_STAT::ADVANCE:
+            carAction = &Omni3WD::setCarAdvance;
+            break;
+        case MOVEMENT_STAT::BACKOFF:
+            carAction = &Omni3WD::setCarBackoff;
+            break;
+        case MOVEMENT_STAT::LEFT:
+            carAction = &Omni3WD::setCarLeft;
+            break;
+        case MOVEMENT_STAT::RIGHT:
+            carAction = &Omni3WD::setCarRight;
+            break;
+        case MOVEMENT_STAT::ROTATELEFT:
+            carAction = &Omni3WD::setCarRotateLeft;
+            break;
+        case MOVEMENT_STAT::ROTATERIGHT:
+            carAction = &Omni3WD::setCarRotateRight;
+            break;
 	}
 
 	if (ms < 100 || abs(speedTemp - currSpeed) < 10)
@@ -206,6 +206,7 @@ unsigned int Omni3WD::setCarSpeedMMPS(unsigned int speedMMPS, unsigned int ms)
 	(this->*carAction)(speedMMPS);
 	return getCarSpeedMMPS();
 }
+
 unsigned int Omni3WD::setCarSlow2Stop(unsigned int ms)
 {
 	return setCarSpeedMMPS(0, ms);
@@ -213,56 +214,46 @@ unsigned int Omni3WD::setCarSlow2Stop(unsigned int ms)
 
 unsigned int Omni3WD::wheelBackSetSpeedMMPS(unsigned int speedMMPS, bool dir)
 {
-	return _wheelBack->setSpeedMMPS(speedMMPS, dir);
+	return m_wheelBack->setSpeedMMPS(speedMMPS, dir);
 }
-/*unsigned int Omni3WD::wheelBackGetSpeedMMPS() const {
-	return _wheelBack->getSpeedMMPS();
-}*/
+
 int Omni3WD::wheelBackGetSpeedMMPS() const
 {
-	return _wheelBack->getSpeedMMPS();
+	return m_wheelBack->getSpeedMMPS();
 }
+
 unsigned int Omni3WD::wheelRightSetSpeedMMPS(unsigned int speedMMPS, bool dir)
 {
-	return _wheelRight->setSpeedMMPS(speedMMPS, dir);
+	return m_wheelRight->setSpeedMMPS(speedMMPS, dir);
 }
-/*unsigned int Omni3WD::wheelRightGetSpeedMMPS() const {
-	return _wheelRight->getSpeedMMPS();
-}*/
+
 int Omni3WD::wheelRightGetSpeedMMPS() const
 {
-	return _wheelRight->getSpeedMMPS();
+	return m_wheelRight->getSpeedMMPS();
 }
+
 unsigned int Omni3WD::wheelLeftSetSpeedMMPS(unsigned int speedMMPS, bool dir)
 {
-	return _wheelLeft->setSpeedMMPS(speedMMPS, dir);
+	return m_wheelLeft->setSpeedMMPS(speedMMPS, dir);
 }
-/*unsigned int Omni3WD::wheelLeftGetSpeedMMPS() const {
-	return _wheelLeft->getSpeedMMPS();
-}*/
+
 int Omni3WD::wheelLeftGetSpeedMMPS() const
 {
-	return _wheelLeft->getSpeedMMPS();
+	return m_wheelLeft->getSpeedMMPS();
 }
+
 bool Omni3WD::PIDEnable(float kc, float taui, float taud, unsigned int interval)
 {
-	return _wheelBack->PIDEnable(kc, taui, taud, interval) &&
-		   _wheelRight->PIDEnable(kc, taui, taud, interval) &&
-		   _wheelLeft->PIDEnable(kc, taui, taud, interval);
+	return m_wheelBack->PIDEnable(kc, taui, taud, interval) &&
+		   m_wheelRight->PIDEnable(kc, taui, taud, interval) &&
+		   m_wheelLeft->PIDEnable(kc, taui, taud, interval);
 }
+
 bool Omni3WD::PIDRegulate()
 {
-	return _wheelBack->PIDRegulate() && _wheelRight->PIDRegulate() && _wheelLeft->PIDRegulate();
+	return m_wheelBack->PIDRegulate() && m_wheelRight->PIDRegulate() && m_wheelLeft->PIDRegulate();
 }
-/*
-void Omni3WD::delayMS(unsigned int ms,bool debug) {
-	for(int i=0;i<ms;i+=SAMPLETIME) {
-		PIDRegulate();
-		if(debug && (i%500==0)) debugger();
-		delay(SAMPLETIME);
-	}
-}
- */
+
 void Omni3WD::delayMS(unsigned int ms, bool debug)
 {
 	for (unsigned long endTime = millis() + ms; millis() < endTime;)
@@ -286,7 +277,8 @@ void Omni3WD::demoActions(unsigned int speedMMPS, unsigned int duration, unsigne
 		&Omni3WD::setCarLeft,
 		&Omni3WD::setCarRight,
 		&Omni3WD::setCarRotateLeft,
-		&Omni3WD::setCarRotateRight};
+		&Omni3WD::setCarRotateRight };
+
 	for (int i = 0; i < 6; ++i)
 	{
 		(this->*carAction[i])(speedMMPS);
@@ -294,10 +286,12 @@ void Omni3WD::demoActions(unsigned int speedMMPS, unsigned int duration, unsigne
 		delayMS(duration, debug);
 		setCarSlow2Stop(uptime);
 	}
+
 	setCarStop();
 	delayMS(duration, debug);
 	// switchMotorsLeft();
 }
+
 // original
 void Omni3WD::demoActions_Orginal(unsigned int speedMMPS, unsigned int ms, bool debug)
 {
@@ -321,9 +315,9 @@ void Omni3WD::demoActions_Orginal(unsigned int speedMMPS, unsigned int ms, bool 
 void Omni3WD::debugger(bool wheelBackDebug, bool wheelRightDebug, bool wheelLeftDebug) const
 {
 	if (wheelBackDebug)
-		_wheelBack->debugger();
+		m_wheelBack->debugger();
 	if (wheelRightDebug)
-		_wheelRight->debugger();
+		m_wheelRight->debugger();
 	if (wheelLeftDebug)
-		_wheelLeft->debugger();
+		m_wheelLeft->debugger();
 }
