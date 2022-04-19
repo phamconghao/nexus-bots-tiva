@@ -5,13 +5,13 @@
  *                            Include Files
  **************************************************************************/
 /* Energia framework Include Files. */
-#include "Energia.h" 
-/* Demo Include Files */
-// #include "main.h"
+#include "Energia.h"
+/* Debug print Include Files */
 #include "debug_printf.h"
 /* Control Include Files: */
 #include <hw_handler.h>
 #include <MotorWheel.h>
+#include <Omni3WD.h>
 // Tiva C driver Include Files
 #include "inc/hw_ints.h"
 #include "inc/hw_memmap.h"
@@ -22,6 +22,8 @@
 /* ROS Include Files */
 #include <ros.h>
 #include <std_msgs/String.h>
+/* Demo Include Files */
+#include "demo.h"
 
 /**************************************************************************
  *                           Macros definition
@@ -66,13 +68,15 @@
 /**************************************************************************
  *                           Global Declarations
  **************************************************************************/
-extern Encoder_Params_t encoderWheel_1_Params;
-extern Encoder_Params_t encoderWheel_2_Params;
-extern Encoder_Params_t encoderWheel_3_Params;
+extern Encoder_Params_t encoderWheel_Back_Params;
+extern Encoder_Params_t encoderWheel_Right_Params;
+extern Encoder_Params_t encoderWheel_Left_Params;
 
-extern MotorWheel wheel1;
-extern MotorWheel wheel2;
-extern MotorWheel wheel3;
+extern MotorWheel motorWheel_Back;
+extern MotorWheel motorWheel_Right;
+extern MotorWheel motorWheel_Left;
+
+extern ros::NodeHandle h_Node;
 
 /**************************************************************************
  *                         Functions Prototype
@@ -90,22 +94,5 @@ extern MotorWheel wheel3;
  *  @returns None
  */
 void attachTimerInterrupt(uint32_t ui32Base, uint32_t ui32Peripheral, void (*p_TmrHandler)(void), unsigned int tmrFreq);
-
-/* LED Blink Demo Functions */
-void ledBlink_demo();
-/* LED Blink with PWM Demo Functions */
-void ledBlinkPWM_demo();
-/* External IO Interrupt Demo Functions */
-void externalInterrupt_demo();
-/* Serial Debug Printf Demo Functions */
-void dbgPrintf_demo();
-/* PID Motor Control Demo Functions */
-void pidMotorControl_demo();
-void PID_TimerInterrupt_Handler();
-/* Timer Interrupt Demo Functions (Timer 5) */
-void tmrInterrupt_demo(void);
-void TimerInterruptDemo_Handler();
-/* ROS chatter communication Demo Functions */
-void ros_chatter_demo();
 
 #endif

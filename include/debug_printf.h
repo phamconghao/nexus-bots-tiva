@@ -27,8 +27,10 @@ void debug_init();
  */
 void debug_printf(const char *format, ...);
 
+
 #ifdef DEBUG
     #define DEBUG_PRINTF(...) debug_printf(__VA_ARGS__)
+    // #define DEBUG_PRINTF(...) Serial.print(__VA_ARGS__)
 #else
     #define DEBUG_PRINTF(...) do {} while (0)
 #endif

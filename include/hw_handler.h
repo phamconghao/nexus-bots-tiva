@@ -6,13 +6,13 @@
 #include "main.h"
 
 /**	
- *  @brief Wheel 1 encoder handler function.
+ *  @brief Wheel Back encoder handler function.
  *
  *  @param None
  *
  *  @returns None
  */
-void encoderWheel_1_Handler(void);
+void encoderWheel_Back_Handler(void);
 
 /**	
  *  @brief Wheel 2 encoder handler function.
@@ -21,7 +21,7 @@ void encoderWheel_1_Handler(void);
  *
  *  @returns None
  */
-void encoderWheel_2_Handler(void);
+void encoderWheel_Right_Handler(void);
 
 /**	
  *  @brief Wheel 3 encoder handler function.
@@ -30,7 +30,7 @@ void encoderWheel_2_Handler(void);
  *
  *  @returns None
  */
-void encoderWheel_3_Handler(void);
+void encoderWheel_Left_Handler(void);
 
 /**	
  *  @brief External interrupt Demo handler function.

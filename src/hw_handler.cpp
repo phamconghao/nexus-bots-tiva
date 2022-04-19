@@ -1,19 +1,18 @@
-#include "MotorWheel.h"
 #include "hw_handler.h"
 
-void encoderWheel_1_Handler(void)
+void encoderWheel_Back_Handler(void)
 {
-    wheel1.encoderHandler();
+    motorWheel_Back.encoderHandler();
 }
 
-void encoderWheel_2_Handler(void)
+void encoderWheel_Right_Handler(void)
 {
-    wheel2.encoderHandler();
+    motorWheel_Right.encoderHandler();
 }
 
-void encoderWheel_3_Handler(void)
+void encoderWheel_Left_Handler(void)
 {
-    wheel3.encoderHandler();
+    motorWheel_Left.encoderHandler();
 }
 
 void extInterruptDemoHandler()
