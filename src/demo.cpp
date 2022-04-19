@@ -1,18 +1,27 @@
 #include "demo.h"
 
-std_msgs::String str_msg;
-ros::Publisher chatter("chatter", &str_msg);
-char hello_msg[] = "hello world!";
-
 /**************************************************************************
- *                     ROS chatter communication Demo
+ *                     ROS communication Demo
  **************************************************************************/
-void ros_chatter_demo()
+std_msgs::String str_msg;
+ros::Publisher chatter("tiva_chatter", &str_msg);
+char hello_msg[] = "Hello world from Tiva C!";
+ros::Subscriber<std_msgs::Empty> suber("toggle_led", &message_Callback);
+
+void message_Callback(const std_msgs::Empty& toggle_msg)
+{
+    digitalWrite(TIVA_BLUE_LED, HIGH - digitalRead(TIVA_BLUE_LED));
+}
+
+void ros_PubSub_demo()
 {
     DEBUG_PRINTF("Start ROS chatter communication Demo\n");
 
+    pinMode(TIVA_BLUE_LED, OUTPUT);
+
     h_Node.initNode();
     h_Node.advertise(chatter);
+    h_Node.subscribe(suber);
 
     /* Main loop */
     for (;;)

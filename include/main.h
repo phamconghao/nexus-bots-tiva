@@ -22,6 +22,7 @@
 /* ROS Include Files */
 #include <ros.h>
 #include <std_msgs/String.h>
+ #include <std_msgs/Empty.h>
 /* Demo Include Files */
 #include "demo.h"
 
@@ -82,7 +83,7 @@ extern ros::NodeHandle h_Node;
  *                         Functions Prototype
  **************************************************************************/
 /**	
- *  @brief Attach Function to Timer interrupt
+ *  @brief User defined function to Attach handler Timer interrupt
  *
  *  @details ...details
  *
@@ -95,4 +96,4 @@ extern ros::NodeHandle h_Node;
  */
 void attachTimerInterrupt(uint32_t ui32Base, uint32_t ui32Peripheral, void (*p_TmrHandler)(void), unsigned int tmrFreq);
 
-#endif
+#endif /* MAIN_H */

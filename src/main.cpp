@@ -77,9 +77,9 @@ void main_program()
     // ledBlinkPWM_demo();
     // externalInterrupt_demo();
     // dbgPrintf_demo();
-    pidMotorControl_demo();
+    // pidMotorControl_demo();
     // tmrInterrupt_demo();
-    // ros_chatter_demo();
+    ros_PubSub_demo();
 }
 
 void attachTimerInterrupt(uint32_t ui32Base, uint32_t ui32Peripheral, void (*p_TmrHandler)(), unsigned int tmrFreq)

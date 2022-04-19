@@ -58,13 +58,16 @@
   // Stm32duino Maple mini USB Serial Port
   #define SERIAL_CLASS USBSerial
 #else 
-  #include <HardwareSerial.h>  // Arduino AVR
+  #include <HardwareSerial.h>
   #define SERIAL_CLASS HardwareSerial
 #endif
 
+#define DEFAULT_BAUD        57600
+#define DEFAULT_IOSTREAM    Serial
+
 class ArduinoHardware {
   public:
-    ArduinoHardware(SERIAL_CLASS* io , long baud= 115200){
+    ArduinoHardware(SERIAL_CLASS* io , long baud = DEFAULT_BAUD){
       iostream = io;
       baud_ = baud;
     }
@@ -76,9 +79,9 @@ class ArduinoHardware {
 #elif defined(USE_TEENSY_HW_SERIAL) or defined(USE_STM32_HW_SERIAL)
       iostream = &Serial1;
 #else
-      iostream = &Serial;
+      iostream = &DEFAULT_IOSTREAM;
 #endif
-      baud_ = 57600;
+      baud_ = DEFAULT_BAUD;
     }
     ArduinoHardware(ArduinoHardware& h){
       this->iostream = h.iostream;

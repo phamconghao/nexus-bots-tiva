@@ -5,6 +5,7 @@
 
 extern std_msgs::String str_msg;
 extern ros::Publisher chatter;
+extern ros::Subscriber<std_msgs::Empty> suber;
 extern char hello_msg[];
 
 /* LED Blink Demo Functions */
@@ -21,7 +22,8 @@ void PID_TimerInterrupt_Handler();
 /* Timer Interrupt Demo Functions (Timer 5) */
 void tmrInterrupt_demo(void);
 void TimerInterruptDemo_Handler();
-/* ROS chatter communication Demo Functions */
-void ros_chatter_demo();
+/* ROS communication Demo Functions */
+void ros_PubSub_demo();
+void message_Callback(const std_msgs::Empty& toggle_msg);
 
 #endif /* DEMO_H */
