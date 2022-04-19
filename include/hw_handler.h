@@ -3,10 +3,7 @@
 
 #include <MotorWheel.h>
 #include "debug_printf.h"
-
-extern Encoder_Params_t encoderWheel_1_Params;
-extern Encoder_Params_t encoderWheel_2_Params;
-extern Encoder_Params_t encoderWheel_3_Params;
+#include "main.h"
 
 /**	
  *  @brief Wheel 1 encoder handler function.
@@ -15,7 +12,7 @@ extern Encoder_Params_t encoderWheel_3_Params;
  *
  *  @returns None
  */
-void encoderWheel_1_Handler();
+void encoderWheel_1_Handler(void);
 
 /**	
  *  @brief Wheel 2 encoder handler function.
@@ -24,7 +21,7 @@ void encoderWheel_1_Handler();
  *
  *  @returns None
  */
-void encoderWheel_2_Handler();
+void encoderWheel_2_Handler(void);
 
 /**	
  *  @brief Wheel 3 encoder handler function.
@@ -33,7 +30,7 @@ void encoderWheel_2_Handler();
  *
  *  @returns None
  */
-void encoderWheel_3_Handler();
+void encoderWheel_3_Handler(void);
 
 /**	
  *  @brief External interrupt Demo handler function.

@@ -99,7 +99,7 @@ unsigned int Motor::runPWM(unsigned int PWM, bool dir, bool saveDir)
 		desiredDirection = dir;
 	}
 
-	// digitalWrite(m_pinDir_A, dir); 
+	// digitalWrite(m_pinDir_A, dir);
     // TODO: add and test driveDirection() function
     driveDirection(dir);
 	/* Write PWM and direction to GPIO */
@@ -300,6 +300,19 @@ long Motor::setCurrPulse(long _pulse)
 	return getCurrPulse();
 }
 
+int Motor::getSpeedRPMOutput()
+{
+    if (speed2DutyCycle >= 0)
+    {
+        // Run PWM with re-mapped speed2DutyCycle from (0-MAX_SPEEDRPM) to (0-MAX_PWM) range
+        return map(speed2DutyCycle, 0, MAX_SPEEDRPM, 0, MAX_PWM);
+    }
+    else
+    {
+        return map(abs(speed2DutyCycle), 0, MAX_SPEEDRPM, 0, MAX_PWM);
+    }
+}
+
 long Motor::resetCurrPulse()
 {
 	return setCurrPulse(0);
@@ -343,6 +356,42 @@ void Motor::debugger() const
     // DEBUG_PRINTF("speed2DutyCycle   -> %f", speed2DutyCycle);
     // DEBUG_PRINTF("speedPPS          -> %d", m_encoderParams->speedPPS);
     // DEBUG_PRINTF("pulses            -> %ld", m_encoderParams->pulses);
+}
+
+void Motor::encoderHandler(void)
+{
+    static bool first_pulse = true;
+    m_encoderParams->pulseEndMicros = micros();
+    if ((first_pulse == false) && 
+        (m_encoderParams->pulseEndMicros > m_encoderParams->pulseStartMicros))
+    {
+        m_encoderParams->speedPPS = 
+            MICROS_PER_SEC / (m_encoderParams->pulseEndMicros - m_encoderParams->pulseStartMicros);
+        // encoderWheel_1_Params.accPPSS =
+        // (encoderWheel_1_Params.speedPPS-encoderWheel_1_Params.lastSpeedPPS)*encoderWheel_1_Params.speedPPS;
+    }
+    else
+    {
+        first_pulse = false;
+    }
+    
+    m_encoderParams->pulseStartMicros = m_encoderParams->pulseEndMicros;
+    // encoderWheel_1_Params.lastSpeedPPS=encoderWheel_1_Params.speedPPS;
+    if (m_encoderParams->pinIRQB != PIN_UNDEFINED)
+    {
+        m_encoderParams->currDirection = 
+            DIR_INVERSE(digitalRead(m_encoderParams->pinIRQ) ^ digitalRead(m_encoderParams->pinIRQB));
+    }
+
+    // Encoder Direction detection (Tested with hardware)
+    if (DIR_ADVANCE == m_encoderParams->currDirection)
+    {
+        ++ m_encoderParams->pulses;
+    }
+    else
+    {
+        -- m_encoderParams->pulses;
+    }
 }
 
 GearedMotor::GearedMotor(unsigned char pinPWM, unsigned char pinDir_A, unsigned char pinDir_B,

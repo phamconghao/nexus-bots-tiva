@@ -8,44 +8,50 @@
 /**************************************************************************
  *                            Include Files
  **************************************************************************/
-
-/* Standard Include Files. */
-#include <Arduino.h>
 /* Demo Include Files */
 #include "main.h"
-#include "debug_printf.h"
-/* Control Include Files: */
-#include <hw_handler.h>
-#include <MotorWheel.h>
-// ---------------------------
-#include <stdint.h>
-#include <stdbool.h>
-#include "inc/hw_ints.h"
-#include "inc/hw_memmap.h"
-#include "inc/hw_types.h"
-#include "driverlib/debug.h"
-#include "driverlib/gpio.h"
-#include "driverlib/interrupt.h"
-#include "driverlib/rom_map.h"
-#include "driverlib/rom.h"
-#include "driverlib/sysctl.h"
-#include "driverlib/timer.h"
-
-/**************************************************************************
- *                           Local Declarations
- **************************************************************************/
 
 /**************************************************************************
  *                           Global Declarations
  **************************************************************************/
 
 /**
- *  Global Variable for Motor 1 Encoder parameters required by the Demo
+ *  Global Variable for Motor Encoder parameters required by the Demo
  */
-Encoder_Params_t encoderWheel_1_Params = {encoderWheel_1_Handler};
+Encoder_Params_t encoderWheel_1_Params = {.Encoder_Handler = encoderWheel_1_Handler};
+Encoder_Params_t encoderWheel_2_Params = {.Encoder_Handler = encoderWheel_2_Handler};
+Encoder_Params_t encoderWheel_3_Params = {.Encoder_Handler = encoderWheel_3_Handler};
+
+/**************************************************************************
+ *                           Local Declarations
+ **************************************************************************/
+
+/**
+ *  Wheel _1_ object for control task
+ */
 MotorWheel wheel1(M1_PWM, M1_DIR_A, M1_DIR_B, M1_ENCA, M1_ENCB, 
                 &encoderWheel_1_Params,
                 REDUCTION_RATIO_NAMIKI_MOTOR, WHEEL_CIRC);
+/**
+ *  Wheel _2_ object for control task
+ */
+MotorWheel wheel2(M2_PWM, M2_DIR_A, M2_DIR_B, M2_ENCA, M2_ENCB, 
+                &encoderWheel_2_Params,
+                REDUCTION_RATIO_NAMIKI_MOTOR, WHEEL_CIRC);
+/**
+ *  Wheel _3_ object for control task
+ */
+MotorWheel wheel3(M3_PWM, M3_DIR_A, M3_DIR_B, M3_ENCA, M3_ENCB, 
+                &encoderWheel_3_Params,
+                REDUCTION_RATIO_NAMIKI_MOTOR, WHEEL_CIRC);
+
+/**
+ *  Node handle object for communication task
+ */
+ros::NodeHandle h_Node;
+std_msgs::String str_msg;
+ros::Publisher chatter("chatter", &str_msg);
+char hello_msg[13] = "hello world!";
 
 /**************************************************************************
  *                      Nexus Bot Demo MAIN Functions
@@ -62,6 +68,7 @@ void main_program()
     // dbgPrintf_demo();
     pidMotorControl_demo();
     // tmrInterrupt_demo();
+    // ros_chatter_demo();
 }
 
 void attachTimerInterrupt(uint32_t ui32Base, uint32_t ui32Peripheral, void (*p_TmrHandler)(), unsigned int tmrFreq)
@@ -78,6 +85,27 @@ void attachTimerInterrupt(uint32_t ui32Base, uint32_t ui32Peripheral, void (*p_T
 }
 
 /**************************************************************************
+ *                     ROS chatter communication Demo
+ **************************************************************************/
+void ros_chatter_demo()
+{
+    DEBUG_PRINTF("Start ROS chatter communication Demo\n");
+
+    h_Node.initNode();
+    h_Node.advertise(chatter);
+
+    /* Main loop */
+    for (;;)
+    {
+        str_msg.data = hello_msg;
+        chatter.publish(&str_msg);
+
+        h_Node.spinOnce();
+        delay(1000);
+    }
+}
+
+/**************************************************************************
  *                     PID Motor Control Demo
  **************************************************************************/
 void PID_TimerInterrupt_Handler()
@@ -86,27 +114,29 @@ void PID_TimerInterrupt_Handler()
     wheel1.PIDRegulate();
 }
 
-// void DEBUGGER_TimerInterrupt_Handler()
-// {
-//     MAP_TimerIntClear(TIMER4_BASE, TIMER_TIMA_TIMEOUT);
-//     DEBUG_PRINTF("EncoderWheel_1_");
-//     DEBUG_PRINTF("\tcurrDirection -> %d", encoderWheel_1_Params.currDirection);
-//     DEBUG_PRINTF("\tspeedPPS -> %d", encoderWheel_1_Params.speedPPS);
-//     DEBUG_PRINTF("\t\tspeedMMPS -> %d\n", wheel1.getSpeedMMPS());
-// }
+void DEBUGGER_TimerInterrupt_Handler()
+{
+    MAP_TimerIntClear(TIMER4_BASE, TIMER_TIMA_TIMEOUT);
+    DEBUG_PRINTF("EncoderWheel_1_");
+    DEBUG_PRINTF("\tcurDir -> %d", encoderWheel_1_Params.currDirection);
+    DEBUG_PRINTF("\tPID Out -> %d", wheel1.getSpeedRPMOutput());
+    DEBUG_PRINTF("\tSpeedMMPS -> %d\n", wheel1.getSpeedMMPS());
+}
 
 void pidMotorControl_demo()
 {
     DEBUG_PRINTF("Start PID Motor Control Demo\n");
     
-    /* PID Regulate periodic with SAMPLETIME = 5ms or 200Hz freq */
-    attachTimerInterrupt(PID_TIMER_BASE, PID_TIMER_SYSCTL_PERIPH, &PID_TimerInterrupt_Handler, 200);
+    /* PID Regulate periodic with SAMPLETIME = 2ms or 500Hz freq */
+    attachTimerInterrupt(PID_TIMER_BASE, PID_TIMER_SYSCTL_PERIPH, &PID_TimerInterrupt_Handler, 500);
 
-    // attachTimerInterrupt(TIMER4_BASE, SYSCTL_PERIPH_TIMER4, &DEBUGGER_TimerInterrupt_Handler, 5);
+    attachTimerInterrupt(TIMER4_BASE, SYSCTL_PERIPH_TIMER4, &DEBUGGER_TimerInterrupt_Handler, 2);
 
     wheel1.setupInterrupt();
     wheel1.PIDEnable(KC, TAUI, TAUD, SAMPLETIME);
 
+    // DEBUG_PRINTF("Motor run ADVANCE MMPS: 100 in 3sec\n");
+    // wheel1.setSpeedMMPS(200, DIR_ADVANCE);
     /* Main loop */
     for (;;)
     {

@@ -60,7 +60,7 @@ V1.5	201209	Omni4WD is re-implemented, and now return value of Omni4WD::getSpeed
 #define KC 					0.31
 #define TAUI 				0.02
 #define TAUD 				0.00
-#define SAMPLETIME 			5 // ms
+#define SAMPLETIME 			2 // ms
 
 #ifndef REDUCTION_RATIO
 	#define REDUCTION_RATIO 64
@@ -533,6 +533,19 @@ public:
 	long getCurrPulse() const;
 
 	/**	
+	 *  @brief Get current PID Output in RPM 
+	 *
+	 *  @details ...details
+	 *
+     *  @param None
+	 *
+	 *  @returns Output speed in RPM (Round per Min) unit
+	 *
+	 *  @retval (int) Motor::speedRPMOutput
+	 */
+	int getSpeedRPMOutput();
+
+	/**	
 	 *  @brief Reset current pulse value of encoder
 	 *
 	 *  @details ...details
@@ -556,6 +569,18 @@ public:
 	 *  @returns None
 	 */
 	void delayMS(unsigned int ms, bool debug = false);
+
+	/**	
+	 *  @brief Handler func for Encoder interrupt event
+	 *
+	 *  @details This function will be called whenever encoder 
+     *           interrupt occured
+	 *
+     *  @param None
+	 *
+	 *  @returns None
+	 */
+    void encoderHandler(void);
 
 	void debugger() const;
 

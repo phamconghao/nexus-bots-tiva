@@ -1,92 +1,19 @@
 #include "MotorWheel.h"
 #include "hw_handler.h"
 
-void encoderWheel_1_Handler()
+void encoderWheel_1_Handler(void)
 {
-    static bool first_pulse = true;
-    encoderWheel_1_Params.pulseEndMicros = micros();
-    if ((first_pulse == false) && 
-        (encoderWheel_1_Params.pulseEndMicros > encoderWheel_1_Params.pulseStartMicros))
-    {
-        encoderWheel_1_Params.speedPPS = 
-            MICROS_PER_SEC / (encoderWheel_1_Params.pulseEndMicros - encoderWheel_1_Params.pulseStartMicros);
-        // encoderWheel_1_Params.accPPSS =
-        // (encoderWheel_1_Params.speedPPS-encoderWheel_1_Params.lastSpeedPPS)*encoderWheel_1_Params.speedPPS;
-    }
-    else
-    {
-        first_pulse = false;
-    }
-    encoderWheel_1_Params.pulseStartMicros = encoderWheel_1_Params.pulseEndMicros;
-    // encoderWheel_1_Params.lastSpeedPPS=encoderWheel_1_Params.speedPPS;
-    if (encoderWheel_1_Params.pinIRQB != PIN_UNDEFINED)
-    {
-        encoderWheel_1_Params.currDirection = 
-            DIR_INVERSE(digitalRead(encoderWheel_1_Params.pinIRQ) ^ digitalRead(encoderWheel_1_Params.pinIRQB));
-    }
-
-    // Encoder Direction detection (Tested with hardware)
-    if (DIR_ADVANCE == encoderWheel_1_Params.currDirection)
-    {
-        ++ encoderWheel_1_Params.pulses;
-    }
-    else
-    {
-        -- encoderWheel_1_Params.pulses;
-    }
+    wheel1.encoderHandler();
 }
 
-void encoderWheel_2_Handler()
+void encoderWheel_2_Handler(void)
 {
-    static bool first_pulse = true;
-    encoderWheel_2_Params.pulseEndMicros = micros();
-    if (first_pulse == false && 
-        encoderWheel_2_Params.pulseEndMicros > encoderWheel_2_Params.pulseStartMicros)
-    {
-        encoderWheel_2_Params.speedPPS = 
-            MICROS_PER_SEC / (encoderWheel_2_Params.pulseEndMicros - encoderWheel_2_Params.pulseStartMicros);
-        // encoderWheel_2_Params.accPPSS = 
-        //     (encoderWheel_2_Params.speedPPS-encoderWheel_2_Params.lastSpeedPPS)*encoderWheel_2_Params.speedPPS;
-    }
-    else
-    {
-        first_pulse = false;
-    }
-    encoderWheel_2_Params.pulseStartMicros = encoderWheel_2_Params.pulseEndMicros;
-    // encoderWheel_2_Params.lastSpeedPPS=encoderWheel_2_Params.speedPPS;
-    if (encoderWheel_2_Params.pinIRQB != PIN_UNDEFINED)
-    {
-        encoderWheel_2_Params.currDirection = 
-            DIR_INVERSE(digitalRead(encoderWheel_2_Params.pinIRQ) ^ digitalRead(encoderWheel_2_Params.pinIRQB));
-    }
-    encoderWheel_2_Params.currDirection == DIR_ADVANCE ? ++encoderWheel_2_Params.pulses : --encoderWheel_2_Params.pulses;
+    wheel2.encoderHandler();
 }
 
-void encoderWheel_3_Handler()
+void encoderWheel_3_Handler(void)
 {
-    static bool first_pulse = true;                                                   
-    encoderWheel_3_Params.pulseEndMicros = micros();
-    if (first_pulse == false && 
-        encoderWheel_3_Params.pulseEndMicros > encoderWheel_3_Params.pulseStartMicros)
-    {
-        // FIXME: speedPPS limit was changed in difference tries
-        encoderWheel_3_Params.speedPPS = 
-            MICROS_PER_SEC / (encoderWheel_3_Params.pulseEndMicros - encoderWheel_3_Params.pulseStartMicros);
-        // encoderWheel_3_Params.accPPSS = 
-        //     (encoderWheel_3_Params.speedPPS-encoderWheel_3_Params.lastSpeedPPS)*encoderWheel_3_Params.speedPPS;
-    }
-    else
-    {
-        first_pulse = false;
-    }
-    encoderWheel_3_Params.pulseStartMicros = encoderWheel_3_Params.pulseEndMicros;
-    // encoderWheel_3_Params.lastSpeedPPS=encoderWheel_3_Params.speedPPS;
-    if (encoderWheel_3_Params.pinIRQB != PIN_UNDEFINED)
-    {
-        encoderWheel_3_Params.currDirection = 
-            DIR_INVERSE(digitalRead(encoderWheel_3_Params.pinIRQ) ^ digitalRead(encoderWheel_3_Params.pinIRQB));
-    }
-    encoderWheel_3_Params.currDirection == DIR_ADVANCE ? ++encoderWheel_3_Params.pulses : --encoderWheel_3_Params.pulses;
+    wheel3.encoderHandler();
 }
 
 void extInterruptDemoHandler()
