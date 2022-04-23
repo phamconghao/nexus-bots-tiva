@@ -22,13 +22,26 @@
 /* ROS Include Files */
 #include <ros.h>
 #include <std_msgs/String.h>
- #include <std_msgs/Empty.h>
+#include <std_msgs/Empty.h>
+/* BMX160 Include Files */
+#include <DFRobot_BMX160.h>
+// #include "MadgwickAHRS.h"
 /* Demo Include Files */
 #include "demo.h"
 
 /**************************************************************************
  *                           Macros definition
  **************************************************************************/
+/* Timer for scheduling periodic PID calculation */
+#define IMU_TIMER_BASE              TIMER2_BASE
+#define IMU_TIMER_SYSCTL_PERIPH     SYSCTL_PERIPH_TIMER2
+/* Timer for scheduling periodic DEBUG print calculation */
+#define DEBUG_TIMER_BASE            TIMER4_BASE
+#define DEBUG_TIMER_SYSCTL_PERIPH   SYSCTL_PERIPH_TIMER4
+/* Timer for scheduling periodic PID calculation */
+#define PID_TIMER_BASE              TIMER5_BASE
+#define PID_TIMER_SYSCTL_PERIPH     SYSCTL_PERIPH_TIMER5
+
 #ifndef MICRO_PER_SEC
     #define MICRO_PER_SEC 1000000
 #endif
@@ -47,24 +60,24 @@
 
 // Motor 1
 #define M1_PWM          PF_2
-#define M1_DIR_A        PA_4
-#define M1_DIR_B        PA_3
+#define M1_DIR_A        PE_2
+#define M1_DIR_B        PE_3
 #define M1_ENCA         PC_5
 #define M1_ENCB         PC_6
 
 // Motor 2
-#define M2_PWM          PF_2
-#define M2_DIR_A        PA_4
-#define M2_DIR_B        PA_3
-#define M2_ENCA         PC_5
-#define M2_ENCB         PC_6
+#define M2_PWM          PF_3
+#define M2_DIR_A        PD_3
+#define M2_DIR_B        PE_1
+#define M2_ENCA         PC_7
+#define M2_ENCB         PD_6
 
 // Motor 3
-#define M3_PWM          PF_2
-#define M3_DIR_A        PA_4
-#define M3_DIR_B        PA_3
-#define M3_ENCA         PC_5
-#define M3_ENCB         PC_6
+#define M3_PWM          PB_3
+#define M3_DIR_A        PB_7
+#define M3_DIR_B        PD_2
+#define M3_ENCA         PD_7
+#define M3_ENCB         PA_2
 
 /**************************************************************************
  *                           Global Declarations

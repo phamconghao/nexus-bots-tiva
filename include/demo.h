@@ -25,5 +25,10 @@ void TimerInterruptDemo_Handler();
 /* ROS communication Demo Functions */
 void ros_PubSub_demo();
 void message_Callback(const std_msgs::Empty& toggle_msg);
+/* BMX160 Demo Functions */
+void bmx160_demo(void);
+void IMU_TimerInterrupt_Handler();
+/* LCD 16x2 I2C PCF8574 interface Demo Functions */
+void lcd16x2_I2CLCD_demo();
 
 #endif /* DEMO_H */
