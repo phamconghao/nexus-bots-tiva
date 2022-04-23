@@ -1,8 +1,116 @@
 #include "demo.h"
-#include "../lib/MadgwickAHRS/MadgwickAHRS.h"
 
+/**************************************************************************
+ *                  LCD 16x2 I2C PCF8574 interface Demo
+ **************************************************************************/
+LiquidCrystal_PCF8574 lcd(0x27); // set the LCD address to 0x27 for a 16 chars and 2 line display
+uint8_t show = -1;
 
+void lcd16x2_I2CLCD_demo()
+{
+    DEBUG_PRINTF("LCD 16x2 I2C PCF8574 interface Demo\n");
 
+    bool error;
+    Wire.begin();
+    Wire.beginTransmission(0x27);
+    error = Wire.endTransmission();
+
+    if (error == 0)
+    {
+        DEBUG_PRINTF("  LCD found.\n");
+        show = 0;
+        lcd.begin(16, 2); // initialize the lcd
+    }
+    else
+    {
+        DEBUG_PRINTF("  LCD not found.\n");
+    } // if
+
+    /* Main loop */
+    for (;;)
+    {
+        if (show == 0)
+        {
+            lcd.setBacklight(255);
+            lcd.home();
+            lcd.clear();
+            DEBUG_PRINTF("Hello LCD\n");
+            lcd.print("Hello LCD");
+            delay(1000);
+
+            lcd.setBacklight(0);
+            delay(400);
+            lcd.setBacklight(255);
+        }
+        else if (show == 1)
+        {
+            lcd.clear();
+            lcd.print("Cursor On");
+            lcd.cursor();
+        }
+        else if (show == 2)
+        {
+            lcd.clear();
+            lcd.print("Cursor Blink");
+            lcd.blink();
+        }
+        else if (show == 3)
+        {
+            lcd.clear();
+            lcd.print("Cursor OFF");
+            lcd.noBlink();
+            lcd.noCursor();
+        }
+        else if (show == 4)
+        {
+            lcd.clear();
+            lcd.print("Display Off");
+            lcd.noDisplay();
+        }
+        else if (show == 5)
+        {
+            lcd.clear();
+            lcd.print("Display On");
+            lcd.display();
+        }
+        else if (show == 7)
+        {
+            lcd.clear();
+            lcd.setCursor(0, 0);
+            lcd.print("*** first line.");
+            lcd.setCursor(0, 1);
+            lcd.print("*** second line.");
+        }
+        else if (show == 8)
+        {
+            lcd.scrollDisplayLeft();
+        }
+        else if (show == 9)
+        {
+            lcd.scrollDisplayLeft();
+        }
+        else if (show == 10)
+        {
+            lcd.scrollDisplayLeft();
+        }
+        else if (show == 11)
+        {
+            lcd.scrollDisplayRight();
+        }
+        else if (show == 12)
+        {
+            lcd.clear();
+            lcd.print("write-");
+        }
+        else if (show > 12)
+        {
+            lcd.print(show - 13);
+        } // if
+
+        delay(1400);
+        show = (show + 1) % 16;
+    }
+}
 /**************************************************************************
  *                    BMX160 IMU Demo
  **************************************************************************/

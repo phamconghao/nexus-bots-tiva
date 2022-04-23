@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <stdarg.h>
 
-// #define DEBUG
+#define DEBUG
 
 #define DBG_MSG_SIZE    64
 

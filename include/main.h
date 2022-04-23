@@ -26,6 +26,9 @@
 /* BMX160 Include Files */
 #include <DFRobot_BMX160.h>
 // #include "MadgwickAHRS.h"
+/* LCD I2C PCF8574 Include Files */
+#include <LiquidCrystal_PCF8574.h>
+#include <Wire.h>
 /* Demo Include Files */
 #include "demo.h"
 
