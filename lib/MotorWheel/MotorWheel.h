@@ -27,7 +27,7 @@ V1.5	201209	Omni4WD is re-implemented, and now return value of Omni4WD::getSpeed
 #define MotorWheel_H
 
 #include <Arduino.h>
-#include <pid_lib.h>
+#include <PID.h>
 #include "../../include/debug_printf.h"
 
 #define MAX_PWM 			255
@@ -71,10 +71,6 @@ V1.5	201209	Omni4WD is re-implemented, and now return value of Omni4WD::getSpeed
 #endif
 
 #define CIRMM 				314 // mm
-
-// Timer for scheduling periodic PID calculation
-#define PID_TIMER_BASE              TIMER5_BASE
-#define PID_TIMER_SYSCTL_PERIPH     SYSCTL_PERIPH_TIMER5
 
 /**
  * @brief Encoder Params structure to hold all the relevant information for
