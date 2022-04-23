@@ -4,7 +4,7 @@
 #include "wiring.h"
 #endif
 
-#include <pid_lib.h>
+#include <PID.h>
 #include "fuzzy_table.h"
 #include <wiring_private.h>
 #include <HardwareSerial.h>
@@ -22,7 +22,7 @@ PID::PID(int *Input, int *Output, int *Setpoint, int *FFBias, float Kc, float Ta
     /* tell the controller that we'll be using an external */
 	UsingFeedForward = true;
     /* bias, and where to find it */
-	myBias = FFBias;
+	m_Bias = FFBias;
 	PID::Reset();
 }
 
@@ -38,9 +38,9 @@ void PID::ConstructorCommon(int *Input, int *Output, int *Setpoint, float Kc, fl
 
 	nextCompTime = millis();
 	inAuto = false;
-	myOutput = Output;
-	myInput = Input;
-	mySetpoint = Setpoint;
+	m_Output = Output;
+	m_Input = Input;
+	m_Setpoint = Setpoint;
 
 	Err = lastErr = prevErr = 0;
 }
@@ -97,24 +97,24 @@ void PID::SetTunings(float Kc, float TauI, float TauD)
 		tempTauR = (1.0 / TauI) * tSampleInSec;
     }
 
-	kc = Kc;
-	taur = tempTauR;
-	taud = TauD / tSampleInSec;
+	m_Kc = Kc;
+	m_TauR = tempTauR;
+	m_TauD = TauD / tSampleInSec;
 
-	cof_A = kc * (1 + taur + taud);
-	cof_B = kc * (1 + 2 * taud);
-	cof_C = kc * taud;
+	cof_A = m_Kc * (1 + m_TauR + m_TauD);
+	cof_B = m_Kc * (1 + 2 * m_TauD);
+	cof_C = m_Kc * m_TauD;
 }
 
 void PID::Reset()
 {
 	if (UsingFeedForward)
 	{
-		bias = (*myBias - outMin) / outSpan;
+		bias = (*m_Bias - outMin) / outSpan;
 	}
 	else
 	{
-		bias = (*myOutput - outMin) / outSpan;
+		bias = (*m_Output - outMin) / outSpan;
 	}
 }
 
@@ -134,19 +134,19 @@ void PID::SetSampleTime(int NewSampleTime)
 	if (NewSampleTime > 0)
 	{
 		// convert the time-based tunings to reflect this change
-		taur *= ((float)NewSampleTime) / ((float)tSample);
-		taud *= ((float)NewSampleTime) / ((float)tSample);
+		m_TauR *= ((float)NewSampleTime) / ((float)tSample);
+		m_TauD *= ((float)NewSampleTime) / ((float)tSample);
 		tSample = (unsigned long)NewSampleTime;
 
-		cof_A = kc * (1 + taur + taud);
-		cof_B = kc * (1 + 2 * taud);
-		cof_C = kc * taud;
+		cof_A = m_Kc * (1 + m_TauR + m_TauD);
+		cof_B = m_Kc * (1 + 2 * m_TauD);
+		cof_C = m_Kc * m_TauD;
 	}
 }
 
 void PID::Compute()
 {
-	justCalced = false;
+	isCalculated = false;
 	if (!inAuto)
     {
         // Just leave if we're in manual mode
@@ -162,18 +162,18 @@ void PID::Compute()
 	// Perform PID Computations if it's time...
 	if (now >= nextCompTime)
 	{
-		Err = *mySetpoint - *myInput;
+		Err = *m_Setpoint - *m_Input;
 		// If we're using an external bias (i.e. the user used the
 		// overloaded constructor,) then pull that in now
 		if (UsingFeedForward)
 		{
-			bias = *myBias - outMin;
+			bias = *m_Bias - outMin;
 		}
 
         // Disables all interrupts, prevents interrupts from happpening
 		noInterrupts();
 		// Perform the PID calculation:
-		//      output = bias + kc * ((Err - lastErr) + (taur * Err) + (taud * (Err - 2*lastErr + prevErr)))
+		//      output = bias + m_Kc * ((Err - lastErr) + (m_TauR * Err) + (m_TauD * (Err - 2*lastErr + prevErr)))
 		int output = bias + (cof_A * Err - cof_B * lastErr + cof_C * prevErr);
         // Re-enable all interrupts
 		interrupts();
@@ -193,7 +193,7 @@ void PID::Compute()
 		lastErr = Err;
 
 		// Scale the output from percent span back out to a real world number
-		*myOutput = output;
+		*m_Output = output;
 
         // Determine the next time the computation
 		nextCompTime += tSample;
@@ -203,7 +203,7 @@ void PID::Compute()
         }
 
         // Set the flag that will tell the outside world that the output was just computed
-		justCalced = true;
+		isCalculated = true;
 	}
 }
 
@@ -214,7 +214,7 @@ void PID::Compute()
 
 bool PID::JustCalculated()
 {
-	return justCalced;
+	return isCalculated;
 }
 
 int PID::GetMode()

@@ -26,7 +26,7 @@ public:
      *  @param TauI       Reset time, a tuning parameter
      *  @param TauD       Derivative time, a tuning parameter
      *
-     *  @returns 	None
+     *  @returns None
      */
     PID(int *Input, int *Output, int *Setpoint, float Kc, float TauI, float TauD);
 
@@ -46,7 +46,7 @@ public:
      *  @param TauI     Reset time, a tuning parameter
      *  @param TauD     Derivative time, a tuning parameter
      *
-     *  @returns 	None
+     *  @returns None
      */
     PID(int *Input, int *Output, int *Setpoint, int *FFBias, float Kc, float TauI, float TauD);
 
@@ -104,7 +104,7 @@ public:
      *  @brief Reset PID. Reinitializes controller internals, automatically
      *         called on a manual to auto transition
      *
-     *  @details does all the things that need to happen to ensure a bumpless transfer
+     *  @details Do all the things that need to happen to ensure a bumpless transfer
      *           from manual to automatic mode.  this shouldn't have to be called from the
      *           outside. In practice though, it is sometimes helpful to start from scratch,
      *           so it was made publicly available
@@ -124,7 +124,7 @@ public:
      *
      *  @param Mode The operation mode of PID. Manual [0] or Auto [non-0]
      *
-     *  @returns 	None
+     *  @returns None
      */
     void SetMode(int Mode);
 
@@ -143,24 +143,24 @@ public:
      *         called every time loop() cycles. ON/OFF and calculation frequency
      *         can be set using SetMode(), SetSampleTime() respectively
      *     
-     *         @details This, as they say, is where the magic happens.  this function should be called
-     *         every time "void loop()" executes.  the function will decide for itself whether a new
-     *         pid Output needs to be computed
-     *     
-     *         Some notes for people familiar with the nuts and bolts of PID control:
-     *         - I used the Ideal form of the PID equation.  mainly because I like IMC
-     *           tunings.  lock in the I and D, and then just vary P to get more
-     *           aggressive or conservative
-     *         - While this controller presented to the outside world as being a Reset Time
-     *           controller, when the user enters their tunings the I term is converted to
-     *           Reset Rate.  I did this merely to avoid the div0 error when the user wants
-     *           to turn Integral action off.
-     *         - Derivative on Measurement is being used instead of Derivative on Error.  The
-     *           performance is identical, with one notable exception.  DonE causes a kick in
-     *           the controller output whenever there's a setpoint change. DonM does not.
-     *     
-     *         If none of the above made sense to you, and you would like it to, go to:
-     *         @reqs http://www.controlguru.com
+     *  @details This, as they say, is where the magic happens.  this function should be called
+     *           every time "void loop()" executes.  the function will decide for itself whether a new
+     *           pid Output needs to be computed
+     *       
+     *           Some notes for people familiar with the nuts and bolts of PID control:
+     *           - I used the Ideal form of the PID equation.  mainly because I like IMC
+     *             tunings.  lock in the I and D, and then just vary P to get more
+     *             aggressive or conservative
+     *           - While this controller presented to the outside world as being a Reset Time
+     *             controller, when the user enters their tunings the I term is converted to
+     *             Reset Rate.  I did this merely to avoid the div0 error when the user wants
+     *             to turn Integral action off.
+     *           - Derivative on Measurement is being used instead of Derivative on Error.  The
+     *             performance is identical, with one notable exception.  DonE causes a kick in
+     *             the controller output whenever there's a setpoint change. DonM does not.
+     *       
+     *           If none of the above made sense to you, and you would like it to, go to:
+     *           @reqs http://www.controlguru.com
      *
      *  @param None
      *
@@ -171,7 +171,7 @@ public:
     /**
      *  @brief Get PID calculation state.
      *
-     *  @details in certain situations, it helps to know when the PID has
+     *  @details In certain situations, it helps to know when the PID has
      *           computed this bit will be true for one cycle after the PID
      *           calculation has occurred
      *
@@ -285,11 +285,11 @@ private:
     void ConstructorCommon(int *Input, int *Output, int *Setpoint, float Kc, float TauI, float TauD);
 
     /* (P)roportional Tuning Parameter, scaled, tweaked parameters we'll actually be using */
-    float kc;
+    float m_Kc;
     /* (I)ntegral Tuning Parameter, scaled, tweaked parameters we'll actually be using */
-    float taur;
+    float m_TauR;
     /* (D)erivative Tuning Parameter, scaled, tweaked parameters we'll actually be using */
-    float taud;
+    float m_TauD;
 
     float cof_A;
     float cof_B;
@@ -302,19 +302,18 @@ private:
     /* (D)erivative Tuning Parameter, pretty parameters we'll give back to the user*/
     float D_Param;
 
-    // * Pointers to the Input, Output, and Setpoint variables
-    //   This creates a hard link between the variables and the
-    //   PID, freeing the user from having to constantly tell us
-    //   what these values are.  with pointers we'll just know.
+    // * Pointers to the Input, Output, and Setpoint variables. This creates a 
+    //   hard link between the variables and the PID, freeing the user from having
+    //   to constantly tell us what these values are.  with pointers we'll just know.
     /* Pointers to the Input variables */
-    int *myInput;
+    int *m_Input;
     /* Pointers to the Output variables */
-    int *myOutput;
+    int *m_Output;
     /* Pointers to the Setpoint variables */
-    int *mySetpoint;
+    int *m_Setpoint;
 
     /* Pointer to the External FeedForward bias, only used if the advanced constructor is used*/
-    int *myBias;
+    int *m_Bias;
     /* Internal flag that tells us if we're using FeedForward or not */
     bool UsingFeedForward;
     /* Figure out when the PID Calculation needs to be performed next to determine when to compute next */
@@ -345,7 +344,7 @@ private:
     float outSpan;
 
     /* Flag gets set for one cycle after the pid calculates */
-    bool justCalced;
+    bool isCalculated;
 };
 
 #endif /* PID_LIB_H */
