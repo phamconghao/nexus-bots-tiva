@@ -41,4 +41,33 @@ void encoderWheel_Left_Handler(void);
  */
 extern void extInterruptDemoHandler();
 
+/**	
+ *  @brief PID Timer interrupt handler function.
+ *
+ *  @param None
+ *
+ *  @returns None
+ */
+extern void PID_TimerInterrupt_Handler();
+
+/**	
+ *  @brief IMU Timer interrupt handler function.
+ *
+ *  @param None
+ *
+ *  @returns None
+ */
+extern void IMU_TimerInterrupt_Handler();
+
+#ifdef DEBUG_PID
+/**	
+ *  @brief Debugger Timer interrupt handler function.
+ *
+ *  @param None
+ *
+ *  @returns None
+ */
+extern void DEBUGGER_TimerInterrupt_Handler();
+#endif
+
 #endif /* HW_HANDLER_H */

@@ -1,30 +1,30 @@
 #include "demo.h"
 
+#ifdef DEMO
+
 /**************************************************************************
  *                  LCD 16x2 I2C PCF8574 interface Demo
  **************************************************************************/
-LiquidCrystal_PCF8574 lcd(0x27); // set the LCD address to 0x27 for a 16 chars and 2 line display
+LiquidCrystal_PCF8574 lcd(LCD_I2C_ADDR); // set the LCD address to 0x27 for a 16 chars and 2 line display
 uint8_t show = -1;
 
 void lcd16x2_I2CLCD_demo()
 {
     DEBUG_PRINTF("LCD 16x2 I2C PCF8574 interface Demo\n");
 
-    bool error;
     Wire.begin();
-    Wire.beginTransmission(0x27);
-    error = Wire.endTransmission();
+    Wire.beginTransmission(LCD_I2C_ADDR);
 
-    if (error == 0)
+    if (Wire.endTransmission())
     {
-        DEBUG_PRINTF("  LCD found.\n");
-        show = 0;
-        lcd.begin(16, 2); // initialize the lcd
+        DEBUG_PRINTF("  LCD not found.\n");
     }
     else
     {
-        DEBUG_PRINTF("  LCD not found.\n");
-    } // if
+        DEBUG_PRINTF("  LCD found.\n");
+        show = 0;
+        lcd.begin(16, 2); /* Initialize the LCD */
+    }
 
     /* Main loop */
     for (;;)
@@ -114,56 +114,16 @@ void lcd16x2_I2CLCD_demo()
 /**************************************************************************
  *                    BMX160 IMU Demo
  **************************************************************************/
-DFRobot_BMX160 bmx160;
+TwoWire Wire2;
+DFRobot_BMX160 bmx160(&Wire2);
 sBmx160SensorData_t Omagn, Ogyro, Oaccel;
-
-void IMU_TimerInterrupt_Handler()
-{
-    MAP_TimerIntClear(IMU_TIMER_BASE, TIMER_TIMA_TIMEOUT);
-    /* Get a new sensor event */
-    // bmx160.getAllData(&Omagn, &Ogyro, &Oaccel);
-    Ogyro.x = 33;
-    Ogyro.x = 33;
-    Ogyro.x = 33;
-    
-    Oaccel.x = 11;
-    Oaccel.y = 11;
-    Oaccel.z = 11;
-
-    Omagn.x = 22;
-    Omagn.y = 22;
-    Omagn.y = 22;
-    // MadgwickAHRSupdate(Ogyro.x, Ogyro.y, Ogyro.z,
-    //                    Oaccel.x, Oaccel.y, Oaccel.z,
-    //                    Omagn.x, Omagn.y, Omagn.x);
-    // Accelerometer
-    Serial.print(Oaccel.x, DEC);
-    Serial.print("\t");
-    Serial.print(Oaccel.y, DEC);
-    Serial.print("\t");
-    Serial.print(Oaccel.z, DEC);
-    Serial.print("\t");
-
-    // Gyroscope
-    Serial.print(Ogyro.x, DEC);
-    Serial.print("\t");
-    Serial.print(Ogyro.y, DEC);
-    Serial.print("\t");
-    Serial.print(Ogyro.z, DEC);
-    Serial.print("\t");
-
-    // Magnetometer
-    Serial.print(Omagn.x + 200, DEC);
-    Serial.print("\t");
-    Serial.print(Omagn.y - 70, DEC);
-    Serial.print("\t");
-    Serial.print(Omagn.z - 700, DEC);
-    Serial.print("\t");
-}
 
 void bmx160_demo()
 {
     DEBUG_PRINTF("Start BMX160 IMU Demo\n");
+
+    Wire2.setModule(2);
+
     /* Init the hardware bmx160 */
     if (bmx160.begin() != true)
     {
@@ -176,32 +136,32 @@ void bmx160_demo()
     /* Main loop */
     for (;;)
     {
-        // /* Display the magnetometer results (magn is magnetometer in uTesla) */
-        // Serial.print("M ");
-        // Serial.print("X: "); Serial.print(Omagn.x); Serial.print("  ");
-        // Serial.print("Y: "); Serial.print(Omagn.y); Serial.print("  ");
-        // Serial.print("Z: "); Serial.print(Omagn.z); Serial.print("  ");
-        // Serial.println("uT");
-        // /* Display the gyroscope results (gyroscope data is in g) */
-        // Serial.print("G ");
-        // Serial.print("X: "); Serial.print(Ogyro.x); Serial.print("  ");
-        // Serial.print("Y: "); Serial.print(Ogyro.y); Serial.print("  ");
-        // Serial.print("Z: "); Serial.print(Ogyro.z); Serial.print("  ");
-        // Serial.println("g");
-        // /* Display the accelerometer results (accelerometer data is in m/s^2) */
-        // Serial.print("A ");
-        // Serial.print("X: "); Serial.print(Oaccel.x); Serial.print("  ");
-        // Serial.print("Y: "); Serial.print(Oaccel.y); Serial.print("  ");
-        // Serial.print("Z: "); Serial.print(Oaccel.z); Serial.print("  ");
-        // Serial.println("m/s^2");
-        // /* Display the accelerometer results (accelerometer data is in m/s^2) */
-        // Serial.print("Q ");
-        // Serial.print("X: "); Serial.print(q0); Serial.print("  ");
-        // Serial.print("Y: "); Serial.print(q1); Serial.print("  ");
-        // Serial.print("Z: "); Serial.print(q2); Serial.print("  ");
-        // Serial.println("");
+        /* Display the magnetometer results (magn is magnetometer in uTesla) */
+        Serial.print("M ");
+        Serial.print("X: "); Serial.print(Omagn.x); Serial.print("  ");
+        Serial.print("Y: "); Serial.print(Omagn.y); Serial.print("  ");
+        Serial.print("Z: "); Serial.print(Omagn.z); Serial.print("  ");
+        Serial.println("uT");
+        /* Display the gyroscope results (gyroscope data is in g) */
+        Serial.print("G ");
+        Serial.print("X: "); Serial.print(Ogyro.x); Serial.print("  ");
+        Serial.print("Y: "); Serial.print(Ogyro.y); Serial.print("  ");
+        Serial.print("Z: "); Serial.print(Ogyro.z); Serial.print("  ");
+        Serial.println("g");
+        /* Display the accelerometer results (accelerometer data is in m/s^2) */
+        Serial.print("A ");
+        Serial.print("X: "); Serial.print(Oaccel.x); Serial.print("  ");
+        Serial.print("Y: "); Serial.print(Oaccel.y); Serial.print("  ");
+        Serial.print("Z: "); Serial.print(Oaccel.z); Serial.print("  ");
+        Serial.println("m/s^2");
+        /* Display the accelerometer results (accelerometer data is in m/s^2) */
+        Serial.print("Q ");
+        Serial.print("X: "); Serial.print(q0); Serial.print("  ");
+        Serial.print("Y: "); Serial.print(q1); Serial.print("  ");
+        Serial.print("Z: "); Serial.print(q2); Serial.print("  ");
+        Serial.println("");
 
-        // delay(1000);
+        delay(1000);
     }
 }
 
@@ -242,21 +202,6 @@ void ros_PubSub_demo()
 /**************************************************************************
  *                     PID Motor Control Demo
  **************************************************************************/
-void PID_TimerInterrupt_Handler()
-{
-    MAP_TimerIntClear(PID_TIMER_BASE, TIMER_TIMA_TIMEOUT);
-    motorWheel_Back.PIDRegulate();
-}
-
-void DEBUGGER_TimerInterrupt_Handler()
-{
-    MAP_TimerIntClear(DEBUG_TIMER_BASE, TIMER_TIMA_TIMEOUT);
-    DEBUG_PRINTF("EncoderWheel_1_");
-    DEBUG_PRINTF("\tcurDir -> %d", encoderWheel_Back_Params.currDirection);
-    DEBUG_PRINTF("\tPID Out -> %d", motorWheel_Back.getSpeedRPMOutput());
-    DEBUG_PRINTF("\tSpeedMMPS -> %d\n", motorWheel_Back.getSpeedMMPS());
-}
-
 void pidMotorControl_demo()
 {
     DEBUG_PRINTF("Start PID Motor Control Demo\n");
@@ -417,3 +362,5 @@ void ledBlinkPWM_demo()
 
     }
 }
+
+#endif

@@ -3,6 +3,9 @@
 
 #include "main.h"
 
+// #define DEMO
+
+#ifdef DEMO
 extern std_msgs::String str_msg;
 extern ros::Publisher chatter;
 extern ros::Subscriber<std_msgs::Empty> suber;
@@ -18,7 +21,6 @@ void externalInterrupt_demo();
 void dbgPrintf_demo();
 /* PID Motor Control Demo Functions */
 void pidMotorControl_demo();
-void PID_TimerInterrupt_Handler();
 /* Timer Interrupt Demo Functions (Timer 5) */
 void tmrInterrupt_demo(void);
 void TimerInterruptDemo_Handler();
@@ -27,8 +29,8 @@ void ros_PubSub_demo();
 void message_Callback(const std_msgs::Empty& toggle_msg);
 /* BMX160 Demo Functions */
 void bmx160_demo(void);
-void IMU_TimerInterrupt_Handler();
 /* LCD 16x2 I2C PCF8574 interface Demo Functions */
 void lcd16x2_I2CLCD_demo();
+#endif
 
 #endif /* DEMO_H */

@@ -64,6 +64,14 @@ Omni3WD omniNexusBot(&motorWheel_Back, &motorWheel_Right, &motorWheel_Left);
  */
 ros::NodeHandle h_Node;
 
+
+TwoWire Wire2;
+/**
+ *  IMU BMX160 handle object
+ */
+DFRobot_BMX160 bmx160(&Wire2);
+sBmx160SensorData_t Omagn, Ogyro, Oaccel;
+
 /**************************************************************************
  *                      Nexus Bot Demo MAIN Functions
  **************************************************************************/
@@ -81,7 +89,33 @@ void main_program()
     // tmrInterrupt_demo();
     // ros_PubSub_demo();
     // bmx160_demo();
-    lcd16x2_I2CLCD_demo();
+    // lcd16x2_I2CLCD_demo();
+
+    DEBUG_PRINTF("Start MAIN Demo\n");
+
+    Wire2.setModule(2);
+
+    /* Init the hardware bmx160 */
+    if (bmx160.begin() != true)
+    {
+        DEBUG_PRINTF("Initialization faild, please check the I2C connect!\n");
+        while(1);
+    }
+
+    attachTimerInterrupt(IMU_TIMER_BASE, IMU_TIMER_SYSCTL_PERIPH, &IMU_TimerInterrupt_Handler, 100);
+
+    /* Main loop */
+    for (;;)
+    {
+        /* Display the magnetometer results (magn is magnetometer in uTesla) */
+        Serial.print("M ");
+        Serial.print("X: "); Serial.print(Omagn.x); Serial.print("  ");
+        Serial.print("Y: "); Serial.print(Omagn.y); Serial.print("  ");
+        Serial.print("Z: "); Serial.print(Omagn.z); Serial.print("  ");
+        Serial.println("uT");
+
+        delay(1000);
+    }
 }
 
 void attachTimerInterrupt(uint32_t ui32Base, uint32_t ui32Peripheral, void (*p_TmrHandler)(), unsigned int tmrFreq)

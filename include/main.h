@@ -25,7 +25,7 @@
 #include <std_msgs/Empty.h>
 /* BMX160 Include Files */
 #include <DFRobot_BMX160.h>
-// #include "MadgwickAHRS.h"
+#include "MadgwickAHRS.h"
 /* LCD I2C PCF8574 Include Files */
 #include <LiquidCrystal_PCF8574.h>
 #include <Wire.h>
@@ -61,26 +61,29 @@
 #define TIVA_SW1        PF_4
 #define TIVA_SW2        PF_0
 
-// Motor 1
+/* Motor 1 Pin Defs */
 #define M1_PWM          PF_2
 #define M1_DIR_A        PE_2
 #define M1_DIR_B        PE_3
 #define M1_ENCA         PC_5
 #define M1_ENCB         PC_6
 
-// Motor 2
+/* Motor 2 Pin Defs */
 #define M2_PWM          PF_3
 #define M2_DIR_A        PD_3
 #define M2_DIR_B        PE_1
 #define M2_ENCA         PC_7
 #define M2_ENCB         PD_6
 
-// Motor 3
+/* Motor 3 Pin Defs */
 #define M3_PWM          PB_3
 #define M3_DIR_A        PB_7
 #define M3_DIR_B        PD_2
 #define M3_ENCA         PD_7
 #define M3_ENCB         PA_2
+
+/* LCD I2C Defs */
+#define LCD_I2C_ADDR    (0x27)
 
 /**************************************************************************
  *                           Global Declarations
@@ -95,8 +98,14 @@ extern MotorWheel motorWheel_Left;
 
 extern ros::NodeHandle h_Node;
 
+extern LiquidCrystal_PCF8574 lcd; // set the LCD address to 0x27 for a 16 chars and 2 line display
+
+extern TwoWire Wire2;
+extern DFRobot_BMX160 bmx160;
+extern sBmx160SensorData_t Omagn, Ogyro, Oaccel;
+
 /**************************************************************************
- *                         Functions Prototype
+ *                      User-defined Functions Prototype
  **************************************************************************/
 /**	
  *  @brief User defined function to Attach handler Timer interrupt
