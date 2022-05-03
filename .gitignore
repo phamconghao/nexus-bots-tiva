@@ -36,3 +36,8 @@
 
 # Build folders
 .pio/
+
+# Altium folders
+/hardware/History
+/hardware/Project Outputs for PCB_Project1
+/hardware/Project Logs for PCB_Project1
