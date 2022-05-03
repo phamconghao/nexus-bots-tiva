@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Motor</title>
+    <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,700,300italic,400italic,700italic|Source+Code+Pro:300,400,700' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" href="../assets/css/bootstrap.css">
+<link rel="stylesheet" href="../assets/css/jquery.bonsai.css">
+<link rel="stylesheet" href="../assets/css/main.css">
+<link rel="stylesheet" href="../assets/icon-font/icons.css">
+<script type="text/javascript" src="../assets/js/jquery-2.1.0.min.js"></script>
+<script type="text/javascript" src="../assets/js/bootstrap.js"></script>
+<script type="text/javascript" src="../assets/js/jquery.bonsai.js"></script>
+
+  </head>
+  <body>
+    <div>
+
+      <!-- Name Title -->
+
+      <h1>Motor</h1>
+
+      <!-- Type and Stereotype -->
+
+      <section style="margin-top: .5em;">
+        <span class="alert alert-info">
+          <span class="node-icon staruml-icon icon-UMLClass"></span>
+          UMLClass
+        </span>
+        
+          <span style="margin-left: 10px" class="alert alert-info">«class»</span>
+        
+      </section>
+
+      <!-- Path -->
+
+      <section style="margin-top: 10px">
+        
+        
+        
+          
+          <span class="label label-info"><a href='cf9c8b720f3815adeccaf3ef6e48c6c4.html'><span class='node-icon staruml-icon icon-Project'></span>nexus-base-control</a></span>
+        
+          <span>::</span>
+          <span class="label label-info"><a href='594af663de577680f35b13183109d675.html'><span class='node-icon staruml-icon icon-UMLModel'></span>Model</a></span>
+        
+          <span>::</span>
+          <span class="label label-info"><a href='057f63e3a5843a13c9e92f862679f0fc.html'><span class='node-icon staruml-icon icon-UMLClass'></span>«class»Motor</a></span>
+        
+      </section>
+
+      <!-- Diagram -->
+
+      
+
+      <!-- Description -->
+
+      
+      <section>
+        <h3>Description</h3>
+        <div>
+          
+            <p>Implementation of Motor control based on PID algorithm.  Inheritance class of PID class</p>
+          
+        </div>
+      </section>
+      
+
+      <!-- Specification -->
+
+      
+
+      <!-- Directed Relationship -->
+
+      
+
+      <!-- Undirected Relationship -->
+
+      
+
+      <!-- Classifier -->
+
+      
+        
+        
+
+
+        
+        
+
+
+        
+        
+
+
+        
+        
+
+
+        
+        
+
+      
+
+      <!-- Interface -->
+
+      
+
+      <!-- Component -->
+
+      
+
+      <!-- Node -->
+
+      
+
+      <!-- Actor -->
+
+      
+
+      <!-- Use Case -->
+
+      
+
+      <!-- Template Parameters -->
+
+      
+
+      <!-- Literals -->
+
+      
+
+      <!-- Attributes -->
+
+      
+      <section>
+        <h3>Attributes</h3>
+        <table class="table table-striped table-bordered">
+          <tr>
+            <th>Visibility</th>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+          
+          <tr>
+            <td>public</td>
+            <td><a href="54478957761537dec89d1db965981003.html">m_encoderParams</a></td>
+            <td>Encoder_Params_t </td>
+            <td><p>Encoder Params structure to hold all the relevant information for the encoder interrupt handling</p></td>
+          </tr>
+          
+          <tr>
+            <td>private</td>
+            <td><a href="b717167423665218a369c99e05d0661b.html">m_pinPWM</a></td>
+            <td>unsigned char </td>
+            <td><p>PWM control GPIO pin</p></td>
+          </tr>
+          
+          <tr>
+            <td>private</td>
+            <td><a href="9359dbaddba0a00b55ea9d5ad3efc879.html">m_pinDir</a></td>
+            <td>unsigned char </td>
+            <td><p>Direction control GPIO pin</p></td>
+          </tr>
+          
+          <tr>
+            <td>private</td>
+            <td><a href="4fb8709e5751f591e8f943fef1d14e57.html">desiredDirection</a></td>
+            <td>bool </td>
+            <td><p>Desired direction</p></td>
+          </tr>
+          
+          <tr>
+            <td>private</td>
+            <td><a href="a11f8928d12d216a5d98f6b058be9a5a.html">speedPWM</a></td>
+            <td>unsigned int </td>
+            <td><p>Current PWM value</p></td>
+          </tr>
+          
+          <tr>
+            <td>private</td>
+            <td><a href="3226c9c996320b20e9da6c3b8b80dcb2.html">speedRPMInput</a></td>
+            <td>int </td>
+            <td><p>Input speed in RPM (Round per Min) unit</p></td>
+          </tr>
+          
+          <tr>
+            <td>private</td>
+            <td><a href="b1d0facafb1ce935d1f20245bc4c9a5c.html">speedRPMOutput</a></td>
+            <td>int </td>
+            <td><p>Output speed in RPM (Round per Min) unit</p></td>
+          </tr>
+          
+          <tr>
+            <td>private</td>
+            <td><a href="e0ab260b505197e0a4bf11b43e80ee6a.html">speedRPMDesired</a></td>
+            <td>int </td>
+            <td><p>Desired speed in RPM (Round per Min) unit</p></td>
+          </tr>
+          
+          <tr>
+            <td>private</td>
+            <td><a href="9d62ad0b67bc9429c325df7b1124a9a5.html">speed2DutyCycle</a></td>
+            <td>float </td>
+            <td></td>
+          </tr>
+          
+          <tr>
+            <td>private</td>
+            <td><a href="e3c72ce48e700ce8b4a64cbe67794919.html">pidCtrl</a></td>
+            <td>bool </td>
+            <td></td>
+          </tr>
+          
+        </table>
+      </section>
+      
+
+      <!-- Operations -->
+
+      
+      <section>
+        <h3>Operations</h3>
+        <table class="table table-striped table-bordered">
+          <tr>
+            <th>Visibility</th>
+            <th>Name</th>
+            <th>Description</th>
+          </tr>
+          
+          <tr>
+            <td>public</td>
+            <td><a href="096a4be5810ea361a2c5cfef7d69a88a.html">Motor()</a></td>
+            <td><p>Motor control Standard Constructor function.</p></td>
+          </tr>
+          
+          <tr>
+            <td>public</td>
+            <td><a href="9b16f556e36512402dac88db5f04250d.html">setupInterrupt()</a></td>
+            <td><p>Encoder Interrupt configuration</p></td>
+          </tr>
+          
+          <tr>
+            <td>public</td>
+            <td><a href="773cb462f4e750e28eb7302713b7f246.html">getPinPWM()</a></td>
+            <td><p>Get configured PWM Pin</p></td>
+          </tr>
+          
+          <tr>
+            <td>public</td>
+            <td><a href="9c66612dd1890dbad0ad2293d72d2bf2.html">getPinDir()</a></td>
+            <td><p>Get configured Direction Pin</p></td>
+          </tr>
+          
+          <tr>
+            <td>public</td>
+            <td><a href="56951933c5ece57a39eca4f7281b5f00.html">getPinIRQ()</a></td>
+            <td><p>Get configured Interrupt Pin</p></td>
+          </tr>
+          
+          <tr>
+            <td>public</td>
+            <td><a href="4b65fa6e2fff145ad0466cbf84e52c1f.html">getPinIRQB()</a></td>
+            <td><p>Get configured Interrupt B Pin</p></td>
+          </tr>
+          
+          <tr>
+            <td>public</td>
+            <td><a href="d5541cf4c1896fa57d55e70d1d67c8f8.html">runPWM()</a></td>
+            <td><p>Run PWM with specified control PWM value and direction</p></td>
+          </tr>
+          
+          <tr>
+            <td>public</td>
+            <td><a href="ef3b1176362ec5115ec82bd2eee0be00.html">getPWM()</a></td>
+            <td><p>Get current PWM value</p></td>
+          </tr>
+          
+          <tr>
+            <td>public</td>
+            <td><a href="1851ae914d071cf5abb34f15f1fdf174.html">advancePWM()</a></td>
+            <td><p>Run PWM with ADVANCE direction</p></td>
+          </tr>
+          
+          <tr>
+            <td>public</td>
+            <td><a href="dfc8496d990b1b965d490a15d1243f0d.html">backoffPWM()</a></td>
+            <td><p>Run PWM with BACKOFF direction</p></td>
+          </tr>
+          
+          <tr>
+            <td>public</td>
+            <td><a href="2558f2b8f0e9160d510ebeec86d91d0d.html">setDesiredDir()</a></td>
+            <td><p>Set Desired control direction</p></td>
+          </tr>
+          
+          <tr>
+            <td>public</td>
+            <td><a href="55e6587fe9ed8791bac934942baf56ee.html">getDesiredDir()</a></td>
+            <td><p>Get Desired control direction</p></td>
+          </tr>
+          
+          <tr>
+            <td>public</td>
+            <td><a href="3126f67bafcb4c18cabd3daf6608e87e.html">reverseDesiredDir()</a></td>
+            <td><p>Reverse Desired control direction</p></td>
+          </tr>
+          
+          <tr>
+            <td>public</td>
+            <td><a href="08b5124385cde1c78e3f02a5221337ad.html">setCurrDir()</a></td>
+            <td><p>Set Current control direction</p></td>
+          </tr>
+          
+          <tr>
+            <td>public</td>
+            <td><a href="5351529ce1dadff2713fdff0c61a5d50.html">getCurrDir()</a></td>
+            <td></td>
+          </tr>
+          
+          <tr>
+            <td>public</td>
+            <td><a href="4d95db95f543d8e98df7749e1a4536e5.html">getSpeedRPM()</a></td>
+            <td></td>
+          </tr>
+          
+          <tr>
+            <td>public</td>
+            <td><a href="b3c6614d68b301344a4bd46294d07b04.html">setSpeedRPM()</a></td>
+            <td></td>
+          </tr>
+          
+          <tr>
+            <td>public</td>
+            <td><a href="b6c64ab20e69a2fce0a29ef04e39df4d.html">PIDSetup()</a></td>
+            <td></td>
+          </tr>
+          
+          <tr>
+            <td>public</td>
+            <td><a href="ce84f5ad89b25c41193b8804da611709.html">PIDGetStatus()</a></td>
+            <td></td>
+          </tr>
+          
+          <tr>
+            <td>public</td>
+            <td><a href="26110209ff296f7b76db80d2115e33d9.html">PIDEnable()</a></td>
+            <td></td>
+          </tr>
+          
+          <tr>
+            <td>public</td>
+            <td><a href="0b776cd8cdf3f9196068440df72863ce.html">PIDDisable()</a></td>
+            <td></td>
+          </tr>
+          
+          <tr>
+            <td>public</td>
+            <td><a href="71a156d710b337f369180eac532bdde3.html">PIDReset()</a></td>
+            <td></td>
+          </tr>
+          
+          <tr>
+            <td>public</td>
+            <td><a href="b2b9ebfabb1e5f27a1d55edc50545eaf.html">PIDRegulate()</a></td>
+            <td></td>
+          </tr>
+          
+          <tr>
+            <td>public</td>
+            <td><a href="125174e97675010392fd3d8514c5ac14.html">PIDSetSpeedRPMDesired()</a></td>
+            <td></td>
+          </tr>
+          
+          <tr>
+            <td>public</td>
+            <td><a href="072a6a705ba0f611540c8494bebd862a.html">PIDGetSpeedRPMDesired()</a></td>
+            <td></td>
+          </tr>
+          
+          <tr>
+            <td>public</td>
+            <td><a href="307226d5f112637953510bc76f890b6b.html">delayMS()</a></td>
+            <td></td>
+          </tr>
+          
+          <tr>
+            <td>public</td>
+            <td><a href="604b4b4763c68be49f21f1dac64c2fbf.html">debugger()</a></td>
+            <td></td>
+          </tr>
+          
+          <tr>
+            <td>public</td>
+            <td><a href="e4d19ba1651147981f5cd099c2548304.html">getSpeedPPS()</a></td>
+            <td></td>
+          </tr>
+          
+          <tr>
+            <td>public</td>
+            <td><a href="63091f8cdf06a810f18b946f4289650d.html">getCurrPulse()</a></td>
+            <td></td>
+          </tr>
+          
+          <tr>
+            <td>public</td>
+            <td><a href="713af0268fdd1c9738eb8d5de4c84bb6.html">setCurrPulse()</a></td>
+            <td></td>
+          </tr>
+          
+          <tr>
+            <td>public</td>
+            <td><a href="f12cdf3c8322321857891430949554ce.html">resetCurrPulse()</a></td>
+            <td></td>
+          </tr>
+          
+        </table>
+      </section>
+      
+
+      <!-- Receptions -->
+
+      
+
+      <!-- Extension Points -->
+
+      
+
+      <!-- Parameters -->
+
+      
+
+      <!-- Diagrams -->
+
+      
+      
+
+      <!-- Behavior -->
+
+      
+
+      <!-- Action -->
+
+      
+
+      <!-- Interaction -->
+
+      
+
+      <!-- CombinedFragment -->
+
+      
+
+      <!-- Activity -->
+
+      
+
+      <!-- State Machine -->
+
+      
+
+      <!-- State Machine -->
+
+      
+
+      <!-- State -->
+
+      
+
+      <!-- Vertex -->
+
+      
+
+      <!-- Transition -->
+
+      
+
+      <!-- Data Model (ERD) -->
+
+      
+
+      <!-- Columns (ERD) -->
+
+      
+
+      <!-- Related Entities (ERD) -->
+
+      
+
+      <!-- Data Flows (DFD) -->
+
+      
+
+      <!-- Flows (Flowchart) -->
+
+      
+
+      <!-- Properties -->
+
+      <section>
+        <h3>Properties</h3>
+        
+        <table class="table table-striped table-bordered">
+    <tr>
+        <th width="50%">Name</th>
+        <th width="50%">Value</th>
+    </tr>
+    
+    
+    
+    
+    
+    
+    
+    <tr>
+        <td>name</td>
+        <td>Motor</td>
+    </tr>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <tr>
+        <td>stereotype</td>
+        <td>class</td>
+    </tr>
+    
+    
+    
+    
+    
+    <tr>
+        <td>visibility</td>
+        <td>public</td>
+    </tr>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <tr>
+        <td>isAbstract</td>
+        <td><span class='label label-info'>false</span></td>
+    </tr>
+    
+    
+    
+    
+    
+    <tr>
+        <td>isFinalSpecialization</td>
+        <td><span class='label label-info'>false</span></td>
+    </tr>
+    
+    
+    
+    
+    
+    <tr>
+        <td>isLeaf</td>
+        <td><span class='label label-info'>false</span></td>
+    </tr>
+    
+    
+    
+    
+    
+    <tr>
+        <td>isActive</td>
+        <td><span class='label label-info'>true</span></td>
+    </tr>
+    
+    
+    
+</table>                
+
+      </section>
+
+      <!-- Tags -->
+
+      
+
+      <!-- Constraints, Dependencies, Dependants -->
+
+      
+        
+        
+
+
+        
+        
+
+
+        
+        
+
+      
+
+      <!-- Relationships -->
+
+      
+      
+<section class="element-list">
+    <h3>Relationships</h3>
+    <ul class="nav nav-list">
+        
+        <li><a href='2cb0b43e5cbf0a6a069d4861896a488b.html'><span class='node-icon staruml-icon icon-UMLAssociation'></span>inheritance (Motor—PID)</a></li>
+        
+        <li><a href='fde308c860fe0f47ed52cc6603bee795.html'><span class='node-icon staruml-icon icon-UMLAssociation'></span>(Motor—Encoder_Params_t)</a></li>
+        
+        <li><a href='ea89c80d9111bbbb065d6e442baec46d.html'><span class='node-icon staruml-icon icon-UMLAssociation'></span>inheritance (GearedMotor—Motor)</a></li>
+        
+    </ul>
+</section>
+
+
+
+      <!-- Owned Elements -->
+
+      
+      
+<section class="element-list">
+    <h3>Owned Elements</h3>
+    <ul class="nav nav-list">
+        
+        <li><a href='2cb0b43e5cbf0a6a069d4861896a488b.html'><span class='node-icon staruml-icon icon-UMLAssociation'></span>inheritance (Motor—PID)</a></li>
+        
+        <li><a href='fde308c860fe0f47ed52cc6603bee795.html'><span class='node-icon staruml-icon icon-UMLAssociation'></span>(Motor—Encoder_Params_t)</a></li>
+        
+    </ul>
+</section>
+
+
+
+    </div>
+  </body>
+</html>
