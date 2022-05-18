@@ -117,6 +117,11 @@ void hardware_Init()
     motorWheel_Right.PIDEnable(KC, TAUI, TAUD, SAMPLETIME);
     motorWheel_Left.setupInterrupt();
     motorWheel_Left.PIDEnable(KC, TAUI, TAUD, SAMPLETIME);
+
+    /* 
+     * Init the STT LED on Nexus controller Board
+     */
+    pinMode(NEXUS_STT_LED, OUTPUT);
 }
 
 void main_program()
@@ -126,6 +131,8 @@ void main_program()
 #endif
 
 #ifdef DEMO     // --> For DEMO
+    pinMode(NEXUS_STT_LED, OUTPUT);
+    sttLED_Flash();
 
     // ledBlink_demo();
     // ledBlinkPWM_demo();
@@ -176,4 +183,18 @@ void attachTimerInterrupt(uint32_t ui32Base, uint32_t ui32Peripheral, void (*p_T
     TimerIntRegister(ui32Base, TIMER_A, p_TmrHandler);
     MAP_TimerIntEnable(ui32Base, TIMER_TIMA_TIMEOUT);
     MAP_TimerEnable(ui32Base, TIMER_A);
+}
+
+void sttLED_Flash(void)
+{
+    digitalWrite(NEXUS_STT_LED, HIGH);
+    delay(50);
+    digitalWrite(NEXUS_STT_LED, LOW);
+    delay(50);
+    digitalWrite(NEXUS_STT_LED, HIGH);
+    delay(50);
+    digitalWrite(NEXUS_STT_LED, LOW);
+    digitalWrite(NEXUS_STT_LED, HIGH);
+    delay(50);
+    digitalWrite(NEXUS_STT_LED, LOW);
 }
