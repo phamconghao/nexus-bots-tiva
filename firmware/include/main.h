@@ -61,26 +61,30 @@
 #define TIVA_SW1        PF_4
 #define TIVA_SW2        PF_0
 
+/* Nexus Control Breakout BoosterPack Board */
+#define NEXUS_STT_LED   PB_5
+#define NEXUS_SWA       PD_2
+
 /* Motor 1 Pin Defs */
 #define M1_PWM          PB_3
 #define M1_DIR_A        PE_1
 #define M1_DIR_B        PD_3
-#define M1_ENCA         PD_7
-#define M1_ENCB         PA_2
+#define M1_ENCA         PA_2
+#define M1_ENCB         PD_7
 
 /* Motor 2 Pin Defs */
 #define M2_PWM          PF_3
-#define M2_DIR_A        PD_3
-#define M2_DIR_B        PE_1
-#define M2_ENCA         PC_7
-#define M2_ENCB         PD_6
+#define M2_DIR_A        PE_3
+#define M2_DIR_B        PE_2
+#define M2_ENCA         PD_6
+#define M2_ENCB         PC_7
 
 /* Motor 3 Pin Defs */
-#define M3_PWM          PB_3
-#define M3_DIR_A        PB_7
-#define M3_DIR_B        PD_2
-#define M3_ENCA         PD_7
-#define M3_ENCB         PA_2
+#define M3_PWM          PF_2
+#define M3_DIR_A        PA_4
+#define M3_DIR_B        PA_3
+#define M3_ENCA         PC_5
+#define M3_ENCB         PC_6
 
 /* LCD I2C Defs */
 #define LCD_I2C_ADDR    (0x27)
@@ -113,6 +117,12 @@ extern LiquidCrystal_PCF8574 lcd; // set the LCD address to 0x27 for a 16 chars 
  *  @brief User defined function to Init Hardware for main program
  */
 void hardware_Init();
+
+/**	
+ *  @brief User defined function to flash STT LED on main program starting
+ */
+void sttLED_Flash(void);
+
 
 /**	
  *  @brief User defined function to Attach handler Timer interrupt
