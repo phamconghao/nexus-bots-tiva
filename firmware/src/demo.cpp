@@ -213,26 +213,26 @@ void pidMotorControl_demo()
     attachTimerInterrupt(DEBUG_TIMER_BASE, DEBUG_TIMER_SYSCTL_PERIPH, &DEBUGGER_TimerInterrupt_Handler, 1);
 #endif 
 
-    motorWheel_Back.setupInterrupt();
-    motorWheel_Back.PIDEnable(KC, TAUI, TAUD, SAMPLETIME);
+    motorWheel_Left.setupInterrupt();
+    motorWheel_Left.PIDEnable(KC, TAUI, TAUD, SAMPLETIME);
 
     /* Main loop */
     for (;;)
     {
         DEBUG_PRINTF("Motor run ADVANCE MMPS: 100 in 3sec\n");
-        motorWheel_Back.setSpeedMMPS(50, DIR_ADVANCE);
+        motorWheel_Left.setSpeedMMPS(50, DIR_ADVANCE);
         delay(3000);
         DEBUG_PRINTF("Motor run ADVANCE MMPS: 200 in 3sec\n");
-        motorWheel_Back.setSpeedMMPS(200, DIR_ADVANCE);
+        motorWheel_Left.setSpeedMMPS(200, DIR_ADVANCE);
         delay(3000);
         DEBUG_PRINTF("Motor run BACKOFF MMPS: 200 in 3sec\n");
-        motorWheel_Back.setSpeedMMPS(200, DIR_BACKOFF);
+        motorWheel_Left.setSpeedMMPS(200, DIR_BACKOFF);
         delay(3000);
         DEBUG_PRINTF("Motor run BACKOFF MMPS: 50 in 3sec\n");
-        motorWheel_Back.setSpeedMMPS(50, DIR_BACKOFF);
+        motorWheel_Left.setSpeedMMPS(50, DIR_BACKOFF);
         delay(2000); 
         DEBUG_PRINTF("Motor Stop in 3sec\n");
-        motorWheel_Back.setSpeedMMPS(0, DIR_ADVANCE);
+        motorWheel_Left.setSpeedMMPS(0, DIR_ADVANCE);
         delay(3000);
     }
 }
@@ -311,14 +311,14 @@ void ledBlink_demo()
 
     uint16_t blinkCounter = 0;
 
-    pinMode(M1_DIR_A, OUTPUT);
+    pinMode(TIVA_RED_LED, OUTPUT);
 
     for (;;) 
     {
         DEBUG_PRINTF("LED Blink %d", blinkCounter ++);
-        digitalWrite(M1_DIR_A, LOW);
+        digitalWrite(TIVA_RED_LED, LOW);
         delay(500);
-        digitalWrite(M1_DIR_A, HIGH);
+        digitalWrite(TIVA_RED_LED, HIGH);
         delay(500);
     }
 }
