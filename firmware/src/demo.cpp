@@ -5,7 +5,7 @@
 /**************************************************************************
  *                  LCD 16x2 I2C PCF8574 interface Demo
  **************************************************************************/
-LiquidCrystal_PCF8574 lcd(LCD_I2C_ADDR); // set the LCD address to 0x27 for a 16 chars and 2 line display
+// LiquidCrystal_PCF8574 lcd(LCD_I2C_ADDR); // set the LCD address to 0x27 for a 16 chars and 2 line display
 uint8_t show = -1;
 
 void lcd16x2_I2CLCD_demo()
@@ -114,9 +114,9 @@ void lcd16x2_I2CLCD_demo()
 /**************************************************************************
  *                    BMX160 IMU Demo
  **************************************************************************/
-TwoWire Wire2;
-DFRobot_BMX160 bmx160(&Wire2);
-sBmx160SensorData_t Omagn, Ogyro, Oaccel;
+// TwoWire Wire2;
+// DFRobot_BMX160 bmx160(&Wire2);
+// sBmx160SensorData_t Omagn, Ogyro, Oaccel;
 
 void bmx160_demo()
 {
@@ -209,7 +209,9 @@ void pidMotorControl_demo()
     /* PID Regulate periodic with SAMPLETIME = 2ms or 500Hz freq */
     attachTimerInterrupt(PID_TIMER_BASE, PID_TIMER_SYSCTL_PERIPH, &PID_TimerInterrupt_Handler, 500);
 
+#ifdef DEBUG_PID
     attachTimerInterrupt(DEBUG_TIMER_BASE, DEBUG_TIMER_SYSCTL_PERIPH, &DEBUGGER_TimerInterrupt_Handler, 1);
+#endif 
 
     motorWheel_Back.setupInterrupt();
     motorWheel_Back.PIDEnable(KC, TAUI, TAUD, SAMPLETIME);
@@ -218,7 +220,7 @@ void pidMotorControl_demo()
     for (;;)
     {
         DEBUG_PRINTF("Motor run ADVANCE MMPS: 100 in 3sec\n");
-        motorWheel_Back.setSpeedMMPS(100, DIR_ADVANCE);
+        motorWheel_Back.setSpeedMMPS(50, DIR_ADVANCE);
         delay(3000);
         DEBUG_PRINTF("Motor run ADVANCE MMPS: 200 in 3sec\n");
         motorWheel_Back.setSpeedMMPS(200, DIR_ADVANCE);

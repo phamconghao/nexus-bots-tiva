@@ -62,11 +62,11 @@
 #define TIVA_SW2        PF_0
 
 /* Motor 1 Pin Defs */
-#define M1_PWM          PF_2
-#define M1_DIR_A        PE_2
-#define M1_DIR_B        PE_3
-#define M1_ENCA         PC_5
-#define M1_ENCB         PC_6
+#define M1_PWM          PB_3
+#define M1_DIR_A        PE_1
+#define M1_DIR_B        PD_3
+#define M1_ENCA         PD_7
+#define M1_ENCB         PA_2
 
 /* Motor 2 Pin Defs */
 #define M2_PWM          PF_3

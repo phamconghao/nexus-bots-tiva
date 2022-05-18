@@ -131,7 +131,7 @@ void main_program()
     // ledBlinkPWM_demo();
     // externalInterrupt_demo();
     // dbgPrintf_demo();
-    // pidMotorControl_demo();
+    pidMotorControl_demo();
     // tmrInterrupt_demo();
     // ros_PubSub_demo();
     // bmx160_demo();

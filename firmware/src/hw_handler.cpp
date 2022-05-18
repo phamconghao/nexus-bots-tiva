@@ -1,5 +1,7 @@
 #include "hw_handler.h"
 
+#define DEBUG_PID
+
 void encoderWheel_Back_Handler(void)
 {
     motorWheel_Back.encoderHandler();
