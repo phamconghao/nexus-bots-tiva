@@ -2,7 +2,7 @@
 
 void debug_init()
 {
-    Serial.begin(115200);
+    DEBUG_SERIAL.begin(115200);
 }
 
 /*
@@ -17,5 +17,5 @@ void debug_printf(const char *format, ...)
   vsnprintf(dbgMsg_buffer, DBG_MSG_SIZE, format, args);
   va_end(args);
 
-  Serial.print(dbgMsg_buffer);
+  DEBUG_SERIAL.print(dbgMsg_buffer);
 }
