@@ -121,9 +121,8 @@ void lcd16x2_I2CLCD_demo()
 void bmx160_demo()
 {
     DEBUG_PRINTF("Start BMX160 IMU Demo\n");
-
-    Wire2.setModule(2);
-
+    Serial.begin(115200);
+    Serial.print("Start BMX160 IMU Demo\n");
     /* Init the hardware bmx160 */
     if (bmx160.begin() != true)
     {

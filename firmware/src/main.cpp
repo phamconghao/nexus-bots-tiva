@@ -64,11 +64,10 @@ Omni3WD omniNexusBot(&motorWheel_Back, &motorWheel_Right, &motorWheel_Left);
  */
 ros::NodeHandle h_Node;
 
-TwoWire Wire2;
 /**
  *  IMU BMX160 handle object
  */
-DFRobot_BMX160 bmx160(&Wire2);
+DFRobot_BMX160 bmx160;
 sBmx160SensorData_t Omagn, Ogyro, Oaccel;
 
 /**
@@ -138,10 +137,10 @@ void main_program()
     // ledBlinkPWM_demo();
     // externalInterrupt_demo();
     // dbgPrintf_demo();
-    pidMotorControl_demo();
+    // pidMotorControl_demo();
     // tmrInterrupt_demo();
     // ros_PubSub_demo();
-    // bmx160_demo();
+    bmx160_demo();
     // lcd16x2_I2CLCD_demo();
 
 #else           // --> For MAIN Program
