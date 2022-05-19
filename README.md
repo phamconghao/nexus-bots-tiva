@@ -15,6 +15,8 @@
 - Arduino framework with Titiva platform in PlatformIO
 - Firmware flashing tool OpenOCD
 
+---
+
 ## Firmware features
 ** To enable demo mode, un-comment DEMO macro in [firmware/include/demo.h](https://github.com/khuehm17/nexus-bots-tiva/blob/main/firmware/include/demo.h), or vice sera. **
 ### Simple Demo
@@ -40,7 +42,9 @@
 
 ### Nexus robot autonomous control
 
-### Documentation
+---
+
+## Documentation
 - Hardware schematic: docs/schematic_v1.0.pdf
 - Pin diagram: docs/pin_diagram.pdf
 - Software diagram: docs/software_digram/html-docs/index.html
