@@ -8,7 +8,7 @@
 // LiquidCrystal_PCF8574 lcd(LCD_I2C_ADDR); // set the LCD address to 0x27 for a 16 chars and 2 line display
 uint8_t show = -1;
 
-void lcd16x2_I2CLCD_demo()
+void lcd16x2_I2CLCD_demo(void)
 {
     DEBUG_PRINTF("LCD 16x2 I2C PCF8574 interface Demo\n");
 
@@ -118,7 +118,7 @@ void lcd16x2_I2CLCD_demo()
 // DFRobot_BMX160 bmx160(&Wire2);
 // sBmx160SensorData_t Omagn, Ogyro, Oaccel;
 
-void bmx160_demo()
+void bmx160_demo(void)
 {
     DEBUG_PRINTF("Start BMX160 IMU Demo\n");
     Serial.begin(115200);
@@ -177,7 +177,7 @@ void message_Callback(const std_msgs::Empty& toggle_msg)
     digitalWrite(TIVA_BLUE_LED, HIGH - digitalRead(TIVA_BLUE_LED));
 }
 
-void ros_PubSub_demo()
+void ros_PubSub_demo(void)
 {
     DEBUG_PRINTF("Start ROS chatter communication Demo\n");
 
@@ -201,7 +201,7 @@ void ros_PubSub_demo()
 /**************************************************************************
  *                     PID Motor Control Demo
  **************************************************************************/
-void pidMotorControl_demo()
+void pidMotorControl_demo(void)
 {
     DEBUG_PRINTF("Start PID Motor Control Demo\n");
     
@@ -239,7 +239,7 @@ void pidMotorControl_demo()
 /**************************************************************************
  *                Timer Interrupt Demo (Timer 5)
  **************************************************************************/
-void TimerInterruptDemo_Handler()
+void TimerInterruptDemo_Handler(void)
 {
     MAP_TimerIntClear(TIMER5_BASE, TIMER_TIMA_TIMEOUT);
     digitalWrite(TIVA_BLUE_LED, !(digitalRead(TIVA_BLUE_LED)));
@@ -265,7 +265,7 @@ void tmrInterrupt_demo(void)
 /**************************************************************************
  *                     Serial Debug Printf Demo
  **************************************************************************/
-void dbgPrintf_demo()
+void dbgPrintf_demo(void)
 {
     /* Init */
     DEBUG_PRINTF("Start Debug Printf Demo");
@@ -286,7 +286,7 @@ void dbgPrintf_demo()
 /**************************************************************************
  *                   External IO Interrupt Demo
  **************************************************************************/
-void externalInterrupt_demo()
+void externalInterrupt_demo(void)
 {
     /* Init */
     DEBUG_PRINTF("Start external Interrupt Demo");
@@ -304,7 +304,7 @@ void externalInterrupt_demo()
 /**************************************************************************
  *                     LED Blink Demo
  **************************************************************************/
-void ledBlink_demo()
+void ledBlink_demo(void)
 {
     DEBUG_PRINTF("Start LED Blink counter Demo");
 
@@ -325,7 +325,7 @@ void ledBlink_demo()
 /**************************************************************************
  *                    LED Blink with PWM Demo
  **************************************************************************/
-void ledBlinkPWM_demo()
+void ledBlinkPWM_demo(void)
 {
     /* Init */
     DEBUG_PRINTF("Start LED Blink with PWM Demo");
