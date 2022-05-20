@@ -20,6 +20,7 @@ void externalInterrupt_demo();
 /* Serial Debug Printf Demo Functions */
 void dbgPrintf_demo();
 /* PID Motor Control Demo Functions */
+#define DEMO_MOTOR_WHEEL      motorWheel_Left
 void pidMotorControl_demo();
 /* Timer Interrupt Demo Functions (Timer 5) */
 void tmrInterrupt_demo(void);
