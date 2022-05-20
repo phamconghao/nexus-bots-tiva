@@ -140,8 +140,9 @@ void main_program()
     // pidMotorControl_demo();
     // tmrInterrupt_demo();
     // ros_PubSub_demo();
-    bmx160_demo();
+    // bmx160_demo();
     // lcd16x2_I2CLCD_demo();
+    nexusControl_demo();
 
 #else           // --> For MAIN Program
 

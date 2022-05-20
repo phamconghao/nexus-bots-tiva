@@ -102,6 +102,8 @@ extern MotorWheel motorWheel_Back;
 extern MotorWheel motorWheel_Right;
 extern MotorWheel motorWheel_Left;
 
+extern Omni3WD omniNexusBot;
+
 extern ros::NodeHandle h_Node;
 
 extern TwoWire Wire2;
