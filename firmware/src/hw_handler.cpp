@@ -25,9 +25,10 @@ void extInterruptDemoHandler()
 void PID_TimerInterrupt_Handler()
 {
     MAP_TimerIntClear(PID_TIMER_BASE, TIMER_TIMA_TIMEOUT);
-    motorWheel_Back.PIDRegulate();
-    motorWheel_Right.PIDRegulate();
-    motorWheel_Left.PIDRegulate();
+    // motorWheel_Back.PIDRegulate();
+    // motorWheel_Right.PIDRegulate();
+    // motorWheel_Left.PIDRegulate();
+    omniNexusBot.PIDRegulate();
 }
 
 

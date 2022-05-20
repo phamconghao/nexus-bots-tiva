@@ -32,6 +32,9 @@ void message_Callback(const std_msgs::Empty& toggle_msg);
 void bmx160_demo(void);
 /* LCD 16x2 I2C PCF8574 interface Demo Functions */
 void lcd16x2_I2CLCD_demo(void);
+/* Nexus Control Demo Functions */
+void nexusControl_demo(void);
+
 #endif
 
 #endif /* DEMO_H */

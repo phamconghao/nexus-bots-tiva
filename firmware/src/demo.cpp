@@ -3,6 +3,46 @@
 #ifdef DEMO
 
 /**************************************************************************
+ *                     Nexus Control Demo
+ **************************************************************************/
+void nexusControl_demo(void)
+{
+    DEBUG_PRINTF("Start Nexus Control Demo\n");
+    
+    /* PID Regulate periodic with SAMPLETIME = 2ms or 500Hz freq */
+    // attachTimerInterrupt(PID_TIMER_BASE, PID_TIMER_SYSCTL_PERIPH, &PID_TimerInterrupt_Handler, 200);
+
+#ifdef DEBUG_PID
+    attachTimerInterrupt(DEBUG_TIMER_BASE, DEBUG_TIMER_SYSCTL_PERIPH, &DEBUGGER_TimerInterrupt_Handler, 1);
+#endif 
+
+    /* 
+     * Init the hardware PID
+     */
+    motorWheel_Back.setupInterrupt();
+    // motorWheel_Back.PIDEnable(KC, TAUI, TAUD, SAMPLETIME);
+    motorWheel_Right.setupInterrupt();
+    // motorWheel_Right.PIDEnable(KC, TAUI, TAUD, SAMPLETIME);
+    motorWheel_Left.setupInterrupt();
+    // motorWheel_Left.PIDEnable(KC, TAUI, TAUD, SAMPLETIME);
+
+    /* Enable PID for Nexus */
+    omniNexusBot.PIDEnable(KC, TAUI, TAUD, SAMPLETIME);
+
+    /* Main loop */
+    for (;;)
+    {
+        omniNexusBot.setCarAdvance(20);
+        omniNexusBot.PIDRegulate();
+        delay(5);
+        // delay(3000);
+        // omniNexusBot.setCarRight(70);
+        // delay(3000);
+        // omniNexusBot.setCarSlow2Stop(1500);
+    }
+}
+
+/**************************************************************************
  *                  LCD 16x2 I2C PCF8574 interface Demo
  **************************************************************************/
 // LiquidCrystal_PCF8574 lcd(LCD_I2C_ADDR); // set the LCD address to 0x27 for a 16 chars and 2 line display
