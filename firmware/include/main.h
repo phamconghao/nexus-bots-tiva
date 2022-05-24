@@ -67,22 +67,22 @@
 
 /* Motor 1 Pin Defs */
 #define M1_PWM          PB_3
-#define M1_DIR_A        PE_1
-#define M1_DIR_B        PD_3
+#define M1_DIR_A        PD_3
+#define M1_DIR_B        PE_1
 #define M1_ENCA         PA_2
 #define M1_ENCB         PD_7
 
 /* Motor 2 Pin Defs */
 #define M2_PWM          PF_3
-#define M2_DIR_A        PE_3
-#define M2_DIR_B        PE_2
+#define M2_DIR_A        PE_2
+#define M2_DIR_B        PE_3
 #define M2_ENCA         PD_6
 #define M2_ENCB         PC_7
 
 /* Motor 3 Pin Defs */
 #define M3_PWM          PF_2
-#define M3_DIR_A        PA_4
-#define M3_DIR_B        PA_3
+#define M3_DIR_A        PA_3
+#define M3_DIR_B        PA_4
 #define M3_ENCA         PC_5
 #define M3_ENCB         PC_6
 
@@ -125,7 +125,6 @@ void hardware_Init();
  */
 void sttLED_Flash(void);
 
-
 /**	
  *  @brief User defined function to Attach handler Timer interrupt
  *
@@ -139,5 +138,14 @@ void sttLED_Flash(void);
  *  @returns None
  */
 void attachTimerInterrupt(uint32_t ui32Base, uint32_t ui32Peripheral, void (*p_TmrHandler)(void), unsigned int tmrFreq);
+
+/**
+ * @brief User defined function to map ROS Geometry messages 
+ *        linear value to Motor control value in MMPS
+ * 
+ * @param linearValue ROS Geometry messages linear value
+ * @return Motor control value in MMPS
+ */
+uint8_t geoLinear2mmps(float linearValue);
 
 #endif /* MAIN_H */

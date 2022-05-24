@@ -83,7 +83,6 @@ void hardware_Init()
     /**
      * Init the hardware bmx160 IMU
      */
-    Wire2.setModule(2);
     if (bmx160.begin() != true)
     {
         DEBUG_PRINTF("Initialization faild, please check the I2C connect!\n");
@@ -148,28 +147,30 @@ void main_program()
 
     DEBUG_PRINTF("Start MAIN Program\n");
 
-    hardware_Init();
+    // hardware_Init();
 
     /* Start PID Regulate Task, periodic with SAMPLETIME = 2ms or 500Hz freq */
     attachTimerInterrupt(PID_TIMER_BASE, PID_TIMER_SYSCTL_PERIPH, &PID_TimerInterrupt_Handler, 500);
     /* Start Reading IMU Task, periodic with 100Hz frequency */
     attachTimerInterrupt(IMU_TIMER_BASE, IMU_TIMER_SYSCTL_PERIPH, &IMU_TimerInterrupt_Handler, 100);
 
+    DEBUG_PRINTF("mapped = %d\n", geoLinear2mmps(0.299999));
+
     /* Main loop */
     for (;;)
     {
-        /* Display the magnetometer results (magn is magnetometer in uTesla) */
-        Serial.print("M ");
-        Serial.print("X: "); Serial.print(Omagn.x); Serial.print("  ");
-        Serial.print("Y: "); Serial.print(Omagn.y); Serial.print("  ");
-        Serial.print("Z: "); Serial.print(Omagn.z); Serial.print("  ");
-        Serial.println("uT");
+        // /* Display the magnetometer results (magn is magnetometer in uTesla) */
+        // Serial.print("M ");
+        // Serial.print("X: "); Serial.print(Omagn.x); Serial.print("  ");
+        // Serial.print("Y: "); Serial.print(Omagn.y); Serial.print("  ");
+        // Serial.print("Z: "); Serial.print(Omagn.z); Serial.print("  ");
+        // Serial.println("uT");
 
-        // lcd.print("Hello LCD");
+        // // lcd.print("Hello LCD");
 
-        delay(1000);
+        // delay(1000);
     }
-#endif          // --> Endif DEMO
+#endif  // --> Endif DEMO
 }
 
 void attachTimerInterrupt(uint32_t ui32Base, uint32_t ui32Peripheral, void (*p_TmrHandler)(), unsigned int tmrFreq)
@@ -197,4 +198,9 @@ void sttLED_Flash(void)
     digitalWrite(NEXUS_STT_LED, HIGH);
     delay(50);
     digitalWrite(NEXUS_STT_LED, LOW);
+}
+
+uint8_t geoLinear2mmps(float linearValue)
+{
+    return linearValue * 400;
 }
