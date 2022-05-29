@@ -23,6 +23,7 @@
 #include <ros.h>
 #include <std_msgs/String.h>
 #include <std_msgs/Empty.h>
+#include <geometry_msgs/Twist.h>
 /* BMX160 Include Files */
 #include <DFRobot_BMX160.h>
 #include "MadgwickAHRS.h"
@@ -44,6 +45,7 @@
 /* Timer for scheduling periodic PID calculation */
 #define PID_TIMER_BASE              TIMER5_BASE
 #define PID_TIMER_SYSCTL_PERIPH     SYSCTL_PERIPH_TIMER5
+#define TEST_
 
 #ifndef MICRO_PER_SEC
     #define MICRO_PER_SEC 1000000
@@ -53,6 +55,9 @@
 #define REDUCTION_RATIO_NAMIKI_MOTOR    80
 #define WHEEL_RADIUS                    24
 #define WHEEL_CIRC                      (WHEEL_RADIUS * 2 * PI)
+
+#define LCD_OPTION                      (0)
+#define IMU_OPTION                      (0)
 
 /* TIVA Board */
 #define TIVA_RED_LED    PF_1
@@ -105,6 +110,7 @@ extern MotorWheel motorWheel_Left;
 extern Omni3WD omniNexusBot;
 
 extern ros::NodeHandle h_Node;
+extern ros::Subscriber<geometry_msgs::Twist> sub_velTwist;
 
 extern TwoWire Wire2;
 extern DFRobot_BMX160 bmx160;
@@ -142,10 +148,59 @@ void attachTimerInterrupt(uint32_t ui32Base, uint32_t ui32Peripheral, void (*p_T
 /**
  * @brief User defined function to map ROS Geometry messages 
  *        linear value to Motor control value in MMPS
+ * @details formular: mapped = (linearValue - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+ *          in_min = 0.00
+ *          in_max = 0.1
+ *          out_min = 0
+ *          out_max = 150
+ *          (out_max - out_min) / (in_max - in_min) + out_min = 2000
  * 
  * @param linearValue ROS Geometry messages linear value
  * @return Motor control value in MMPS
  */
 uint8_t geoLinear2mmps(float linearValue);
+
+/**
+ * @brief User defined function to map ROS Geometry messages 
+ *        angular value to Motor control value in MMPS
+ * 
+ * @param angularValue ROS Geometry messages angular value
+ * @return Motor control value in MMPS
+ */
+uint8_t geoAngular2mmps(float angularValue);
+
+/**
+ * @brief The user can search for a value in a certain range 
+ *        to compare whether the value belongs to the range 
+ *        under consideration.
+ * 
+ * @param min_value     The value is minimum in a range
+ * @param max_value     The value is maximum in a range
+ * @param comp_value    The value is considered in a range
+ * @return true 
+ * @return false 
+ */
+bool positive_inRange(float min_value, float max_value, float comp_value);
+
+/**
+ * @brief The user can search for a value in a certain range 
+ *        to compare whether the value belongs to the range 
+ *        under consideration.
+ * 
+ * @param min_value     The value is minimum in a range
+ * @param max_value     The value is maximum in a range
+ * @param comp_value    The value is considered in a range
+ * @return true 
+ * @return false 
+ */
+bool negative_inRange(float min_value, float max_value, float comp_value);
+
+/**
+ * @brief Implement speed control advance or back-off 
+ *        from Jetson Nano's command
+ * 
+ * @param cmd_twistSpeed Twist value from keyboard.
+ */
+void cmdTwistSpeedCallback(const geometry_msgs::Twist& cmd_twistSpeed);
 
 #endif /* MAIN_H */

@@ -3,7 +3,7 @@
 
 #include "main.h"
 
-#define DEMO
+// #define DEMO
 
 #ifdef DEMO
 extern std_msgs::String str_msg;

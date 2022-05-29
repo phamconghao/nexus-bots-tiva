@@ -19,22 +19,21 @@ void nexusControl_demo(void)
     /* 
      * Init the hardware PID
      */
-    motorWheel_Back.setupInterrupt();
+    // motorWheel_Back.setupInterrupt();
     // motorWheel_Back.PIDEnable(KC, TAUI, TAUD, SAMPLETIME);
-    motorWheel_Right.setupInterrupt();
+    // motorWheel_Right.setupInterrupt();
     // motorWheel_Right.PIDEnable(KC, TAUI, TAUD, SAMPLETIME);
-    motorWheel_Left.setupInterrupt();
+    // motorWheel_Left.setupInterrupt();
     // motorWheel_Left.PIDEnable(KC, TAUI, TAUD, SAMPLETIME);
 
     /* Enable PID for Nexus */
     omniNexusBot.PIDEnable(KC, TAUI, TAUD, SAMPLETIME);
+    omniNexusBot.setCarRotateLeft(10);
 
     /* Main loop */
     for (;;)
     {
-        omniNexusBot.setCarAdvance(20);
         omniNexusBot.PIDRegulate();
-        delay(5);
         // delay(3000);
         // omniNexusBot.setCarRight(70);
         // delay(3000);
@@ -223,7 +222,7 @@ void ros_PubSub_demo(void)
 
     pinMode(TIVA_BLUE_LED, OUTPUT);
 
-    h_Node.initNode();
+    h_Node.initNode();  
     h_Node.advertise(chatter);
     h_Node.subscribe(suber);
 

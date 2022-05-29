@@ -7,7 +7,7 @@
 
 #define DEBUG
 
-#define DEBUG_SERIAL    Serial5
+#define DEBUG_SERIAL    Serial
 #define DBG_MSG_SIZE    64
 
 /**	
