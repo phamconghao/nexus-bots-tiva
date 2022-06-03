@@ -24,12 +24,17 @@
 #include <std_msgs/String.h>
 #include <std_msgs/Empty.h>
 #include <geometry_msgs/Twist.h>
+#include <sensor_msgs/Imu.h>
+#include <sensor_msgs/MagneticField.h>
 /* BMX160 Include Files */
 #include <DFRobot_BMX160.h>
 #include "MadgwickAHRS.h"
 /* LCD I2C PCF8574 Include Files */
 #include <LiquidCrystal_PCF8574.h>
 #include <Wire.h>
+/* Math Include Files */
+#include <math.h>
+#include <MatrixMath.h>
 /* Demo Include Files */
 #include "demo.h"
 
@@ -57,7 +62,8 @@
 #define WHEEL_CIRC                      (WHEEL_RADIUS * 2 * PI)
 
 #define LCD_OPTION                      (0)
-#define IMU_OPTION                      (0)
+#define IMU_OPTION                      (1)
+
 
 /* TIVA Board */
 #define TIVA_RED_LED    PF_1
@@ -67,7 +73,8 @@
 #define TIVA_SW2        PF_0
 
 /* Nexus Control Breakout BoosterPack Board */
-#define NEXUS_STT_LED   PB_5
+// #define NEXUS_STT_LED   PB_5
+#define NEXUS_STT_LED   PF_4
 #define NEXUS_SWA       PD_2
 
 /* Motor 1 Pin Defs */
@@ -111,6 +118,10 @@ extern Omni3WD omniNexusBot;
 
 extern ros::NodeHandle h_Node;
 extern ros::Subscriber<geometry_msgs::Twist> sub_velTwist;
+extern ros::Publisher pub_GyroAccel;
+extern ros::Publisher pub_Mag;
+extern sensor_msgs::Imu imu_GyroAccel_msg;
+extern sensor_msgs::MagneticField imu_Mag_msg;
 
 extern TwoWire Wire2;
 extern DFRobot_BMX160 bmx160;

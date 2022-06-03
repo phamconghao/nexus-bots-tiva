@@ -64,12 +64,17 @@ Omni3WD omniNexusBot(&motorWheel_Back, &motorWheel_Right, &motorWheel_Left);
  */
 ros::NodeHandle h_Node;
 ros::Subscriber<geometry_msgs::Twist> sub_velTwist("/cmd_vel", &cmdTwistSpeedCallback);
+ros::Publisher pub_GyroAccel("imu/data_raw", &imu_GyroAccel_msg);
+ros::Publisher pub_Mag("imu/mag", &imu_Mag_msg);
+sensor_msgs::Imu imu_GyroAccel_msg;
+sensor_msgs::MagneticField imu_Mag_msg;
 
 /**
  *  IMU BMX160 handle object
  */
 DFRobot_BMX160 bmx160;
 sBmx160SensorData_t Omagn, Ogyro, Oaccel;
+// Madgwick madgwickFilter;
 
 /**
  *  PCF8574 LCD handle object
@@ -159,19 +164,27 @@ void main_program()
     /* Start PID Regulate Task, periodic with SAMPLETIME = 2ms or 500Hz freq */
     attachTimerInterrupt(PID_TIMER_BASE, PID_TIMER_SYSCTL_PERIPH, &PID_TimerInterrupt_Handler, 500);
     /* Start Reading IMU Task, periodic with 100Hz frequency */
-    // attachTimerInterrupt(IMU_TIMER_BASE, IMU_TIMER_SYSCTL_PERIPH, &IMU_TimerInterrupt_Handler, 100);
+    attachTimerInterrupt(IMU_TIMER_BASE, IMU_TIMER_SYSCTL_PERIPH, &IMU_TimerInterrupt_Handler, 100);
 
     /** Enable PID for object Omni Nexus */
     omniNexusBot.PIDEnable(KC, TAUI, TAUD, SAMPLETIME);
+
+    // madgwickFilter.begin(sampleFreqDef);
     
     h_Node.initNode();
     h_Node.subscribe(sub_velTwist);
+    h_Node.advertise(pub_GyroAccel);
+    h_Node.advertise(pub_Mag);
 
     /* Main loop */
     for (;;)
     {
+        /* Publish IMU data to ROS */
+        pub_GyroAccel.publish(&imu_GyroAccel_msg);
+        pub_Mag.publish(&imu_Mag_msg);
+
         h_Node.spinOnce();
-        delay(2);
+        delay(5);
     }
 #endif         // --> Endif DEMO
 }
@@ -340,6 +353,5 @@ void cmdTwistSpeedCallback(const geometry_msgs::Twist& cmd_twistSpeed)
         mappedSpeed = geoAngular2mmps(0.5);
         omniNexusBot.setCarRotateRight(mappedSpeed);
     }
-    ////////////////////////////////////////////////////////////////
 
 }

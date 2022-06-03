@@ -25,9 +25,6 @@ void extInterruptDemoHandler()
 void PID_TimerInterrupt_Handler()
 {
     MAP_TimerIntClear(PID_TIMER_BASE, TIMER_TIMA_TIMEOUT);
-    // motorWheel_Back.PIDRegulate();
-    // motorWheel_Right.PIDRegulate();
-    // motorWheel_Left.PIDRegulate();
     omniNexusBot.PIDRegulate();
 }
 
@@ -37,44 +34,36 @@ void IMU_TimerInterrupt_Handler()
     MAP_TimerIntClear(IMU_TIMER_BASE, TIMER_TIMA_TIMEOUT);
     /* Get a new sensor event */
     bmx160.getAllData(&Omagn, &Ogyro, &Oaccel);
-    // Ogyro.x = 33;
-    // Ogyro.x = 33;
-    // Ogyro.x = 33;
     
-    // Oaccel.x = 11;
-    // Oaccel.y = 11;
-    // Oaccel.z = 11;
+    /* Passing current time stamp to ROS sensor message */
+    imu_GyroAccel_msg.header.stamp = h_Node.now();
+    imu_Mag_msg.header.stamp = h_Node.now();
+    // imu_data.header.stamp = h_Node.now();
+    // imu_data.header.frame_id = "imu_madgwick";
 
-    // Omagn.x = 22;
-    // Omagn.y = 22;
-    // Omagn.y = 22;
-    MadgwickAHRSupdate(Ogyro.x, Ogyro.y, Ogyro.z,
-                       Oaccel.x, Oaccel.y, Oaccel.z,
-                       Omagn.x, Omagn.y, Omagn.x);
+    /* Frame_id to ROS sensor message */
+    imu_GyroAccel_msg.header.frame_id = "imu_gyro_accel";
+    imu_Mag_msg.header.frame_id = "imu_mag";
+    
+    /* Passing IMU raw data to ROS sensor message */
+    imu_GyroAccel_msg.linear_acceleration.x = Oaccel.x; // * 9.8;
+    imu_GyroAccel_msg.linear_acceleration.y = Oaccel.y; // * 9.8;
+    imu_GyroAccel_msg.linear_acceleration.z = Oaccel.z; // * 9.8;
+    imu_GyroAccel_msg.angular_velocity.x = Ogyro.x * DEG_TO_RAD;
+    imu_GyroAccel_msg.angular_velocity.y = Ogyro.y * DEG_TO_RAD;
+    imu_GyroAccel_msg.angular_velocity.z = Ogyro.z * DEG_TO_RAD;
+    imu_Mag_msg.magnetic_field.x = Omagn.x;
+    imu_Mag_msg.magnetic_field.y = Omagn.y;
+    imu_Mag_msg.magnetic_field.z = Omagn.z;
 
-    // // Accelerometer
-    // Serial.print(Oaccel.x, DEC);
-    // Serial.print("\t");
-    // Serial.print(Oaccel.y, DEC);
-    // Serial.print("\t");
-    // Serial.print(Oaccel.z, DEC);
-    // Serial.print("\t");
+    // madgwickFilter.update(Ogyro.x, Ogyro.y, Ogyro.z,
+    //                       Oaccel.x, Oaccel.y, Oaccel.z,
+    //                       Omagn.x, Omagn.y, Omagn.z);
+    
+    // imu_data.x = madgwickFilter.getRoll();
+    // imu_data.y = madgwickFilter.getPitch();
+    // imu_data.z = madgwickFilter.getYaw();
 
-    // // Gyroscope
-    // Serial.print(Ogyro.x, DEC);
-    // Serial.print("\t");
-    // Serial.print(Ogyro.y, DEC);
-    // Serial.print("\t");
-    // Serial.print(Ogyro.z, DEC);
-    // Serial.print("\t");
-
-    // // Magnetometer
-    // Serial.print(Omagn.x + 200, DEC);
-    // Serial.print("\t");
-    // Serial.print(Omagn.y - 70, DEC);
-    // Serial.print("\t");
-    // Serial.print(Omagn.z - 700, DEC);
-    // Serial.print("\t");
 }
 
 #ifdef DEBUG_PID
