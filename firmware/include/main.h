@@ -26,6 +26,7 @@
 #include <geometry_msgs/Twist.h>
 #include <sensor_msgs/Imu.h>
 #include <sensor_msgs/MagneticField.h>
+#include <nav_msgs/Odometry.h>
 /* BMX160 Include Files */
 #include <DFRobot_BMX160.h>
 #include "MadgwickAHRS.h"
