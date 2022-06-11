@@ -28,7 +28,7 @@ void PID_TimerInterrupt_Handler()
     omniNexusBot.PIDRegulate();
 }
 
-
+#if IMU_OPTION
 void IMU_TimerInterrupt_Handler()
 {
     MAP_TimerIntClear(IMU_TIMER_BASE, TIMER_TIMA_TIMEOUT);
@@ -54,6 +54,7 @@ void IMU_TimerInterrupt_Handler()
     imu_Mag_msg.magnetic_field.y = Omagn.y;
     imu_Mag_msg.magnetic_field.z = Omagn.z;
 }
+#endif
 
 #ifdef DEBUG_PID
 void DEBUGGER_TimerInterrupt_Handler()

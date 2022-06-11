@@ -12,6 +12,7 @@
 #include <hw_handler.h>
 #include <MotorWheel.h>
 #include <Omni3WD.h>
+#include "holonomic.h"
 // Tiva C driver Include Files
 #include "inc/hw_ints.h"
 #include "inc/hw_memmap.h"
@@ -63,7 +64,7 @@
 #define WHEEL_CIRC                      (WHEEL_RADIUS * 2 * PI)
 
 #define LCD_OPTION                      (0)
-#define IMU_OPTION                      (1)
+#define IMU_OPTION                      (0)
 
 
 /* TIVA Board */
@@ -123,12 +124,14 @@ extern ros::Publisher pub_GyroAccel;
 extern ros::Publisher pub_Mag;
 extern sensor_msgs::Imu imu_GyroAccel_msg;
 extern sensor_msgs::MagneticField imu_Mag_msg;
+extern nav_msgs::Odometry odom_msg;
 
 extern TwoWire Wire2;
 extern DFRobot_BMX160 bmx160;
 extern sBmx160SensorData_t Omagn, Ogyro, Oaccel;
 
 extern LiquidCrystal_PCF8574 lcd; // set the LCD address to 0x27 for a 16 chars and 2 line display
+
 
 /**************************************************************************
  *                      User-defined Functions Prototype

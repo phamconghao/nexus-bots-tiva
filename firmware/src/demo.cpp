@@ -16,19 +16,9 @@ void nexusControl_demo(void)
     attachTimerInterrupt(DEBUG_TIMER_BASE, DEBUG_TIMER_SYSCTL_PERIPH, &DEBUGGER_TimerInterrupt_Handler, 1);
 #endif 
 
-    /* 
-     * Init the hardware PID
-     */
-    // motorWheel_Back.setupInterrupt();
-    // motorWheel_Back.PIDEnable(KC, TAUI, TAUD, SAMPLETIME);
-    // motorWheel_Right.setupInterrupt();
-    // motorWheel_Right.PIDEnable(KC, TAUI, TAUD, SAMPLETIME);
-    // motorWheel_Left.setupInterrupt();
-    // motorWheel_Left.PIDEnable(KC, TAUI, TAUD, SAMPLETIME);
-
     /* Enable PID for Nexus */
     omniNexusBot.PIDEnable(KC, TAUI, TAUD, SAMPLETIME);
-    omniNexusBot.setCarRotateLeft(10);
+    omniNexusBot.setCarRotateLeft(50);
 
     /* Main loop */
     for (;;)
@@ -194,11 +184,10 @@ void bmx160_demo(void)
         Serial.println("m/s^2");
         /* Display the accelerometer results (accelerometer data is in m/s^2) */
         Serial.print("Q ");
-        Serial.print("X: "); Serial.print(q0); Serial.print("  ");
-        Serial.print("Y: "); Serial.print(q1); Serial.print("  ");
-        Serial.print("Z: "); Serial.print(q2); Serial.print("  ");
+        Serial.print("X: "); Serial.print(Omagn.x); Serial.print("  ");
+        Serial.print("Y: "); Serial.print(Omagn.y); Serial.print("  ");
+        Serial.print("Z: "); Serial.print(Omagn.z); Serial.print("  ");
         Serial.println("");
-
         delay(1000);
     }
 }
