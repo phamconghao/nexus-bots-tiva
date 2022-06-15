@@ -64,10 +64,11 @@ Omni3WD omniNexusBot(&motorWheel_Back, &motorWheel_Right, &motorWheel_Left);
  */
 ros::NodeHandle h_Node;
 ros::Subscriber<geometry_msgs::Twist> sub_velTwist("cmd_vel", &cmdTwistSpeedCallback);
-ros::Publisher pub_GyroAccel("imu/data_raw", &imu_GyroAccel_msg);
-ros::Publisher pub_Mag("imu/mag", &imu_Mag_msg);
-sensor_msgs::Imu imu_GyroAccel_msg;
-sensor_msgs::MagneticField imu_Mag_msg;
+// ros::Publisher pub_GyroAccel("imu/data_raw", &imu_GyroAccel_msg);
+// ros::Publisher pub_Mag("imu/mag", &imu_Mag_msg);
+ros::Publisher pub_Odom("/odom", &odom_msg);
+// sensor_msgs::Imu imu_GyroAccel_msg;
+// sensor_msgs::MagneticField imu_Mag_msg;
 nav_msgs::Odometry odom_msg;
 
 /**
@@ -81,12 +82,18 @@ sBmx160SensorData_t Omagn, Ogyro, Oaccel;
  */
 LiquidCrystal_PCF8574 lcd(LCD_I2C_ADDR);
 
-float robot_position_inertial[2] = {0, 0};
+/**
+ *  Holonomic handle
+ */
+holoOdom_t hOdom;
+float matrix_speed_wheels_encoder[3] = {0};
+float matrix_w_b[3][3];
+float matrix_b_w[3][3];
+int i = 0, j = 0;
 float robot_heading_inertial = 0;
 float robot_speed_inertial_frame[2] = {0}; 
 float robot_speed_body_frame[2] = {0};
-unsigned long current_time_ms = millis();
-
+float omega;
 
 
 /**************************************************************************
@@ -153,14 +160,15 @@ void main_program()
     // ros_PubSub_demo();
     // bmx160_demo();
     // lcd16x2_I2CLCD_demo();
-    nexusControl_demo();
+    // nexusControl_demo();
+    ros_Odom_demo();
 
 #else           // --> For MAIN Program
 
     DEBUG_PRINTF("Start MAIN Program\n");
 
     hardware_Init();
-    sttLED_Flash();
+    // sttLED_Flash();
 
     /* Start PID Regulate Task, periodic with SAMPLETIME = 2ms or 500Hz freq */
     attachTimerInterrupt(PID_TIMER_BASE, PID_TIMER_SYSCTL_PERIPH, &PID_TimerInterrupt_Handler, 500);
@@ -169,19 +177,53 @@ void main_program()
     attachTimerInterrupt(IMU_TIMER_BASE, IMU_TIMER_SYSCTL_PERIPH, &IMU_TimerInterrupt_Handler, 100);
 #endif
 
+    unsigned long current_time_ms = millis();
+    /* Calculate Odometry from holomonic dynamic */
+    generate_matrix_wheel_body(matrix_w_b, matrix_b_w);
+    
     h_Node.initNode();
+    
     /* Subscribe velocity data from ROS */
     h_Node.subscribe(sub_velTwist);
     
+#if IMU_OPTION    
     h_Node.advertise(pub_GyroAccel);
     h_Node.advertise(pub_Mag);
+#endif
+
+    h_Node.advertise(pub_Odom);
+    sttLED_Flash();
 
     /* Main loop */
     for (;;)
     {
+#if IMU_OPTION
         /* Publish IMU data to ROS */
         pub_GyroAccel.publish(&imu_GyroAccel_msg);
         pub_Mag.publish(&imu_Mag_msg);
+#endif
+
+#if CAL_ODOM
+    unsigned long previous_time_ms = millis();
+    get_speed_body_frame_from_encoderMMPS(robot_speed_body_frame, &omega);
+    unsigned long delta_t_ms = current_time_ms - previous_time_ms;
+    float delta_t = (float)delta_t_ms / 1000;
+    robot_transform_body_to_inertial(robot_heading_inertial, robot_speed_body_frame, robot_speed_inertial_frame);
+    robot_integrate_speed(hOdom, robot_speed_inertial_frame, omega, delta_t);
+    previous_time_ms = current_time_ms;
+    /* Passing current time stamp to ROS sensor message */
+    odom_msg.header.stamp = h_Node.now();
+    /* Frame_id to ROS sensor message */
+    odom_msg.header.frame_id = "base_footprint";
+    odom_msg.child_frame_id = "odom";
+    /* Passing Odom raw data to ROS sensor message */
+    odom_msg.pose.pose.position.x = hOdom.position_x;
+    odom_msg.pose.pose.position.y = hOdom.position_y;
+    odom_msg.pose.pose.position.z = 0;
+    odom_msg.pose.pose.orientation.z = hOdom.heading;
+#endif
+        /* Publish Odom data to ROS */
+        pub_Odom.publish(&odom_msg);
 
         h_Node.spinOnce();
         delay(5);
@@ -218,12 +260,12 @@ void sttLED_Flash(void)
 
 uint8_t geoLinear2mmps(float linearValue)
 {
-    return linearValue * 1000;
+    return linearValue * 750;
 }
 
 uint8_t geoAngular2mmps(float angularValue)
 {
-    return angularValue * 150;
+    return angularValue * 50;
 }
 
 bool positive_inRange(float min_value, float max_value, float comp_value)

@@ -3,6 +3,64 @@
 #ifdef DEMO
 
 /**************************************************************************
+ *                     ROS Odometry Demo
+ **************************************************************************/
+void ros_Odom_demo(void)
+{
+    DEBUG_PRINTF("Start Nexus Control Demo\n");
+    
+    /* PID Regulate periodic with SAMPLETIME = 2ms or 500Hz freq */
+    // attachTimerInterrupt(PID_TIMER_BASE, PID_TIMER_SYSCTL_PERIPH, &PID_TimerInterrupt_Handler, 200);
+
+#ifdef DEBUG_PID
+    attachTimerInterrupt(DEBUG_TIMER_BASE, DEBUG_TIMER_SYSCTL_PERIPH, &DEBUGGER_TimerInterrupt_Handler, 1);
+#endif 
+
+    /* Enable PID for Nexus */
+    omniNexusBot.PIDEnable(KC, TAUI, TAUD, SAMPLETIME);
+
+    /* Start PID Regulate Task, periodic with SAMPLETIME = 2ms or 500Hz freq */
+    attachTimerInterrupt(PID_TIMER_BASE, PID_TIMER_SYSCTL_PERIPH, &PID_TimerInterrupt_Handler, 500);
+
+    holoOdom_t hOdom;
+    float matrix_w_b[3][3];
+    float matrix_b_w[3][3];
+    // int i = 0, j = 0;
+    float robot_speed_inertial_frame[2] = {0};
+    float robot_speed_body_frame[2] = {0};
+    float omega;
+    unsigned long current_time_ms = millis();
+    /* Calculate Odometry from holomonic dynamic */
+    
+    omniNexusBot.setCarAdvance(50);
+
+    /* Main loop */
+    for (;;)
+    {
+#if CAL_ODOM
+        generate_matrix_wheel_body(matrix_w_b, matrix_b_w);
+        for (i = 0; i < 3; i++)
+        {
+            for (j = 0; j < 3; j++)
+            {
+                DEBUG_PRINTF("matrix_w_b[%d][%d] = %f\n", i, j, matrix_w_b[i][j]);
+            }
+        }
+        unsigned long previous_time_ms = millis();
+        get_speed_body_frame_from_encoderMMPS(robot_speed_body_frame, &omega);
+        DEBUG_PRINTF("robot_speed_body_frame[0] = %f\n", robot_speed_body_frame[0]);
+        DEBUG_PRINTF("robot_speed_body_frame[1] = %f\n", robot_speed_body_frame[1]);
+        unsigned long delta_t_ms = current_time_ms - previous_time_ms;
+        float delta_t = (float)delta_t_ms / 1000;
+        robot_transform_body_to_inertial(hOdom, robot_speed_body_frame, robot_speed_inertial_frame);
+        robot_integrate_speed(hOdom, robot_speed_inertial_frame, omega, delta_t);
+        previous_time_ms = current_time_ms;
+        // DEBUG_PRINTF("Heading: %f\n", hOdom.heading);
+
+#endif
+    }
+}
+/**************************************************************************
  *                     Nexus Control Demo
  **************************************************************************/
 void nexusControl_demo(void)
@@ -18,16 +76,21 @@ void nexusControl_demo(void)
 
     /* Enable PID for Nexus */
     omniNexusBot.PIDEnable(KC, TAUI, TAUD, SAMPLETIME);
-    omniNexusBot.setCarRotateLeft(50);
 
+    /* Start PID Regulate Task, periodic with SAMPLETIME = 2ms or 500Hz freq */
+    attachTimerInterrupt(PID_TIMER_BASE, PID_TIMER_SYSCTL_PERIPH, &PID_TimerInterrupt_Handler, 500);
+    omniNexusBot.setCarRotateLeft(100);
+    
     /* Main loop */
     for (;;)
     {
-        omniNexusBot.PIDRegulate();
-        // delay(3000);
-        // omniNexusBot.setCarRight(70);
-        // delay(3000);
-        // omniNexusBot.setCarSlow2Stop(1500);
+        
+        // omniNexusBot.setCarRotateRight(50);
+        // delay(2000);
+        // omniNexusBot.setCarBackoff(30);
+        // delay(2000);
+        // omniNexusBot.setCarAdvance(30);
+        // delay(2000);
     }
 }
 

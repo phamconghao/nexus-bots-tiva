@@ -26,6 +26,7 @@ void PID_TimerInterrupt_Handler()
 {
     MAP_TimerIntClear(PID_TIMER_BASE, TIMER_TIMA_TIMEOUT);
     omniNexusBot.PIDRegulate();
+    // DEMO_MOTOR_WHEEL.PIDRegulate();
 }
 
 #if IMU_OPTION

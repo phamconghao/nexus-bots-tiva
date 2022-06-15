@@ -1,22 +1,44 @@
 #include "holonomic.h"
 
-void generate_matrix_wheel_body(float matrix_w_b[][3], float matrix_b_w[][3])
+void generate_matrix_wheel_body(float matrix_w_b[3][3], float matrix_b_w[3][3])
 {
     float angle_between_wheels[3];
     angle_between_wheels[0] = 180 * PI / 180; //rad
     angle_between_wheels[1] = (-60) * PI / 180; //rad
     angle_between_wheels[2] = 60 * PI / 180; //rad
     // see reference: https://github.com/cvra/CVRA-doc/blob/master/holonomic.pdf
+
     for (i = 0; i < 3; i++)
     {
         matrix_b_w[i][0] = -BODY_RADIUS;
         matrix_b_w[i][1] = sin(angle_between_wheels[i]);
         matrix_b_w[i][2] = -cos(angle_between_wheels[i]);
     }
+    
+
     for (i = 0; i < 3; i++)
+    {
         for (j = 0; j < 3; j++)
+        {
             matrix_w_b[i][j] = matrix_b_w[i][j]; //create a copy
+        }
+    }
+
     Matrix.Invert((float*)matrix_w_b, 3); // this thing stores the inverted matrix in itself
+    // for (i = 0; i < 3; i++)
+    // {
+    //     for (j = 0; j < 3; j++)
+    //     {
+    //         DEBUG_PRINTF("matrix_b_w[%d][%d] = %f\n", i, j, matrix_b_w[i][j]);
+    //     }
+    // }
+    // for (i = 0; i < 3; i++)
+    // {
+    //     for (j = 0; j < 3; j++)
+    //     {
+    //         DEBUG_PRINTF("matrix_w_b[%d][%d] = %f\n", i, j, matrix_w_b[i][j]);
+    //     }
+    // }
 }
 
 void generate_rot_matrix_body_to_inertial(float rotation_z_axis[][2], float theta)
@@ -30,24 +52,32 @@ void generate_rot_matrix_body_to_inertial(float rotation_z_axis[][2], float thet
 // Formula 10th
 void get_speed_body_frame_from_encoderMMPS(float robot_speed_body_frame[], float *omega)
 {
+    /* Update current wheels speed in MMPS */
     matrix_speed_wheels_encoder[0] = omniNexusBot.wheelBackGetSpeedMMPS();
     matrix_speed_wheels_encoder[1] = omniNexusBot.wheelRightGetSpeedMMPS();
     matrix_speed_wheels_encoder[2] = omniNexusBot.wheelLeftGetSpeedMMPS();
 
-    robot_speed_body_frame[0] = robot_speed_body_frame[1] = *omega = 0;
+    /* Reset body speed value */
+    robot_speed_body_frame[0] = 0;
+    robot_speed_body_frame[1] = 0;
+    *omega = 0;
 
+    /* Calculate linear and angular velocity */
     for (i = 0; i <= 2; i++)
     {
-      *omega = *omega + matrix_w_b[0][i] * matrix_speed_wheels_encoder[i];
-      robot_speed_body_frame[0] = robot_speed_body_frame[0] + matrix_w_b[1][i] * matrix_speed_wheels_encoder[i]; // vx
-      robot_speed_body_frame[1] = robot_speed_body_frame[1] + matrix_w_b[2][i] * matrix_speed_wheels_encoder[i]; // vy
+        *omega = *omega + matrix_w_b[0][i] * matrix_speed_wheels_encoder[i];
+        robot_speed_body_frame[0] = robot_speed_body_frame[0] + matrix_w_b[1][i] * matrix_speed_wheels_encoder[i];
+        robot_speed_body_frame[1] = robot_speed_body_frame[1] + matrix_w_b[2][i] * matrix_speed_wheels_encoder[i];
     }
+    // DEBUG_PRINTF("*omega = %f\n", *omega);
+    // DEBUG_PRINTF("robot_speed_body_frame[0] = %f\n",  robot_speed_body_frame[0]);
+    // DEBUG_PRINTF("robot_speed_body_frame[1] = %f\n",  robot_speed_body_frame[1]);
 }
 
-void robot_transform_body_to_inertial(float heading_angle, float vector[], float transformed_vector[])
+void robot_transform_body_to_inertial(holoOdom_t hOdom, float vector[], float transformed_vector[])
 {
     float rotation_z_axis[2][2] = {0};
-    generate_rot_matrix_body_to_inertial(rotation_z_axis, heading_angle);
+    generate_rot_matrix_body_to_inertial(rotation_z_axis, hOdom.heading);
     transformed_vector[0] = rotation_z_axis[0][0] * vector[0] + rotation_z_axis[0][1] * vector[1];
     transformed_vector[1] = rotation_z_axis[1][0] * vector[0] + rotation_z_axis[1][1] * vector[1];
 }

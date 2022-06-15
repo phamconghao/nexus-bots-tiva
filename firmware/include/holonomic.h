@@ -11,24 +11,13 @@ typedef struct
     float heading;
 } holoOdom_t;
 
-extern int encoder_speed_wheel_back;
-extern int encoder_speed_wheel_right;
-extern int encoder_speed_wheel_left;
-
-extern float matrix_speed_wheels_encoder[];
-extern int i, j;
-
-extern float back_wheel_speed, right_wheel_speed, left_wheel_speed;
-extern float matrix_w_b[3][3];
-extern float matrix_b_w[3][3];
-
 /**
  * @brief 
  * 
  * @param matrix_w_b 
  * @param matrix_b_w 
  */
-void generate_matrix_wheel_body(float matrix_w_b[][3], float matrix_b_w[][3]);
+void generate_matrix_wheel_body(float matrix_w_b[3][3], float matrix_b_w[3][3]);
 
 /**
  * @brief 
@@ -50,15 +39,6 @@ void get_speed_body_frame_from_encoderMMPS(float robot_speed_body_frame[], float
 /**
  * @brief 
  * 
- * @param velocity_x 
- * @param velocity_y 
- * @param duration 
- */
-void drive_line_body_frame(float velocity_x, float velocity_y, float duration);
-
-/**
- * @brief 
- * 
  * @param position 
  * @param heading 
  * @param velocity 
@@ -74,7 +54,7 @@ void robot_integrate_speed(float position[], float *heading, float velocity[], f
  * @param vector 
  * @param transformed_vector 
  */
-void robot_transform_body_to_inertial(float heading_angle, float vector[], float transformed_vector[]);
+void robot_transform_body_to_inertial(holoOdom_t hOdom, float vector[], float transformed_vector[]);
 
 /**
  * @brief 
@@ -85,6 +65,5 @@ void robot_transform_body_to_inertial(float heading_angle, float vector[], float
  * @param delta_t 
  */
 void robot_integrate_speed(holoOdom_t hOdom, float velocity[], float omega, float delta_t);
-
 
 #endif  // HOLONOMIC_H

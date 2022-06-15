@@ -3,7 +3,7 @@
 
 #include "main.h"
 
-// #define DEMO
+#define DEMO
 
 #ifdef DEMO
 extern std_msgs::String str_msg;
@@ -20,7 +20,7 @@ void externalInterrupt_demo(void);
 /* Serial Debug Printf Demo Functions */
 void dbgPrintf_demo(void);
 /* PID Motor Control Demo Functions */
-#define DEMO_MOTOR_WHEEL      motorWheel_Back
+#define DEMO_MOTOR_WHEEL      motorWheel_Right
 void pidMotorControl_demo(void);
 /* Timer Interrupt Demo Functions (Timer 5) */
 void tmrInterrupt_demo(void);
@@ -34,6 +34,8 @@ void bmx160_demo(void);
 void lcd16x2_I2CLCD_demo(void);
 /* Nexus Control Demo Functions */
 void nexusControl_demo(void);
+/* ROS Odometry Demo Function */
+void ros_Odom_demo(void);
 
 #endif
 
