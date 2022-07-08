@@ -8,54 +8,41 @@
 void ros_Odom_demo(void)
 {
     DEBUG_PRINTF("Start Nexus Control Demo\n");
-    
-    /* PID Regulate periodic with SAMPLETIME = 2ms or 500Hz freq */
-    // attachTimerInterrupt(PID_TIMER_BASE, PID_TIMER_SYSCTL_PERIPH, &PID_TimerInterrupt_Handler, 200);
 
 #ifdef DEBUG_PID
     attachTimerInterrupt(DEBUG_TIMER_BASE, DEBUG_TIMER_SYSCTL_PERIPH, &DEBUGGER_TimerInterrupt_Handler, 1);
-#endif 
+#endif
 
     /* Enable PID for Nexus */
     omniNexusBot.PIDEnable(KC, TAUI, TAUD, SAMPLETIME);
 
     /* Start PID Regulate Task, periodic with SAMPLETIME = 2ms or 500Hz freq */
     attachTimerInterrupt(PID_TIMER_BASE, PID_TIMER_SYSCTL_PERIPH, &PID_TimerInterrupt_Handler, 500);
-
-    holoOdom_t hOdom;
-    float matrix_w_b[3][3];
-    float matrix_b_w[3][3];
-    // int i = 0, j = 0;
-    float robot_speed_inertial_frame[2] = {0};
-    float robot_speed_body_frame[2] = {0};
-    float omega;
-    unsigned long current_time_ms = millis();
-    /* Calculate Odometry from holomonic dynamic */
-    
+    // omniNexusBot.setCarStop();
     omniNexusBot.setCarAdvance(50);
+    unsigned long previous_time_ms = millis();
+    generate_matrix_wheel_body(matrix_w_b, matrix_b_w);
 
     /* Main loop */
     for (;;)
     {
 #if CAL_ODOM
-        generate_matrix_wheel_body(matrix_w_b, matrix_b_w);
-        for (i = 0; i < 3; i++)
-        {
-            for (j = 0; j < 3; j++)
-            {
-                DEBUG_PRINTF("matrix_w_b[%d][%d] = %f\n", i, j, matrix_w_b[i][j]);
-            }
-        }
-        unsigned long previous_time_ms = millis();
+        DEBUG_PRINTF("PPS           = %f\n", SPEEDPPS2SPEEDRPM(motorWheel_Left.getSpeedRPM()));
+        unsigned long current_time_ms = millis();
         get_speed_body_frame_from_encoderMMPS(robot_speed_body_frame, &omega);
-        DEBUG_PRINTF("robot_speed_body_frame[0] = %f\n", robot_speed_body_frame[0]);
-        DEBUG_PRINTF("robot_speed_body_frame[1] = %f\n", robot_speed_body_frame[1]);
+        DEBUG_PRINTF("velocity x    = %f\n", robot_speed_body_frame[0]);
+        DEBUG_PRINTF("velocity y    = %f\n", robot_speed_body_frame[1]);
         unsigned long delta_t_ms = current_time_ms - previous_time_ms;
         float delta_t = (float)delta_t_ms / 1000;
-        robot_transform_body_to_inertial(hOdom, robot_speed_body_frame, robot_speed_inertial_frame);
-        robot_integrate_speed(hOdom, robot_speed_inertial_frame, omega, delta_t);
+        // robot_transform_body_to_inertial(robot_heading_inertial, robot_speed_body_frame, robot_speed_inertial_frame);
+        robot_integrate_speed(robot_position_inertial, &robot_heading_inertial, robot_speed_body_frame, omega, delta_t);
+        DEBUG_PRINTF("heading       = %f\n", robot_heading_inertial);
+        DEBUG_PRINTF("position x    = %f\n", robot_position_inertial[0]);
+        DEBUG_PRINTF("position y    = %f\n", robot_position_inertial[1]);
+        DEBUG_PRINTF("\n");
+
         previous_time_ms = current_time_ms;
-        // DEBUG_PRINTF("Heading: %f\n", hOdom.heading);
+        // DEBUG_PRINTF("Heading: %f\n", nexusHoloOdom.heading);
 
 #endif
     }
@@ -66,13 +53,13 @@ void ros_Odom_demo(void)
 void nexusControl_demo(void)
 {
     DEBUG_PRINTF("Start Nexus Control Demo\n");
-    
+
     /* PID Regulate periodic with SAMPLETIME = 2ms or 500Hz freq */
     // attachTimerInterrupt(PID_TIMER_BASE, PID_TIMER_SYSCTL_PERIPH, &PID_TimerInterrupt_Handler, 200);
 
 #ifdef DEBUG_PID
     attachTimerInterrupt(DEBUG_TIMER_BASE, DEBUG_TIMER_SYSCTL_PERIPH, &DEBUGGER_TimerInterrupt_Handler, 1);
-#endif 
+#endif
 
     /* Enable PID for Nexus */
     omniNexusBot.PIDEnable(KC, TAUI, TAUD, SAMPLETIME);
@@ -80,11 +67,11 @@ void nexusControl_demo(void)
     /* Start PID Regulate Task, periodic with SAMPLETIME = 2ms or 500Hz freq */
     attachTimerInterrupt(PID_TIMER_BASE, PID_TIMER_SYSCTL_PERIPH, &PID_TimerInterrupt_Handler, 500);
     omniNexusBot.setCarRotateLeft(100);
-    
+
     /* Main loop */
     for (;;)
     {
-        
+
         // omniNexusBot.setCarRotateRight(50);
         // delay(2000);
         // omniNexusBot.setCarBackoff(30);
@@ -219,7 +206,8 @@ void bmx160_demo(void)
     if (bmx160.begin() != true)
     {
         DEBUG_PRINTF("Initialization faild, please check the I2C connect!\n");
-        while(1);
+        while (1)
+            ;
     }
 
     attachTimerInterrupt(IMU_TIMER_BASE, IMU_TIMER_SYSCTL_PERIPH, &IMU_TimerInterrupt_Handler, 100);
@@ -229,27 +217,51 @@ void bmx160_demo(void)
     {
         /* Display the magnetometer results (magn is magnetometer in uTesla) */
         Serial.print("M ");
-        Serial.print("X: "); Serial.print(Omagn.x); Serial.print("  ");
-        Serial.print("Y: "); Serial.print(Omagn.y); Serial.print("  ");
-        Serial.print("Z: "); Serial.print(Omagn.z); Serial.print("  ");
+        Serial.print("X: ");
+        Serial.print(Omagn.x);
+        Serial.print("  ");
+        Serial.print("Y: ");
+        Serial.print(Omagn.y);
+        Serial.print("  ");
+        Serial.print("Z: ");
+        Serial.print(Omagn.z);
+        Serial.print("  ");
         Serial.println("uT");
         /* Display the gyroscope results (gyroscope data is in g) */
         Serial.print("G ");
-        Serial.print("X: "); Serial.print(Ogyro.x); Serial.print("  ");
-        Serial.print("Y: "); Serial.print(Ogyro.y); Serial.print("  ");
-        Serial.print("Z: "); Serial.print(Ogyro.z); Serial.print("  ");
+        Serial.print("X: ");
+        Serial.print(Ogyro.x);
+        Serial.print("  ");
+        Serial.print("Y: ");
+        Serial.print(Ogyro.y);
+        Serial.print("  ");
+        Serial.print("Z: ");
+        Serial.print(Ogyro.z);
+        Serial.print("  ");
         Serial.println("g");
         /* Display the accelerometer results (accelerometer data is in m/s^2) */
         Serial.print("A ");
-        Serial.print("X: "); Serial.print(Oaccel.x); Serial.print("  ");
-        Serial.print("Y: "); Serial.print(Oaccel.y); Serial.print("  ");
-        Serial.print("Z: "); Serial.print(Oaccel.z); Serial.print("  ");
+        Serial.print("X: ");
+        Serial.print(Oaccel.x);
+        Serial.print("  ");
+        Serial.print("Y: ");
+        Serial.print(Oaccel.y);
+        Serial.print("  ");
+        Serial.print("Z: ");
+        Serial.print(Oaccel.z);
+        Serial.print("  ");
         Serial.println("m/s^2");
         /* Display the accelerometer results (accelerometer data is in m/s^2) */
         Serial.print("Q ");
-        Serial.print("X: "); Serial.print(Omagn.x); Serial.print("  ");
-        Serial.print("Y: "); Serial.print(Omagn.y); Serial.print("  ");
-        Serial.print("Z: "); Serial.print(Omagn.z); Serial.print("  ");
+        Serial.print("X: ");
+        Serial.print(Omagn.x);
+        Serial.print("  ");
+        Serial.print("Y: ");
+        Serial.print(Omagn.y);
+        Serial.print("  ");
+        Serial.print("Z: ");
+        Serial.print(Omagn.z);
+        Serial.print("  ");
         Serial.println("");
         delay(1000);
     }
@@ -263,7 +275,7 @@ ros::Publisher chatter("tiva_chatter", &str_msg);
 char hello_msg[] = "Hello world from Tiva C!";
 ros::Subscriber<std_msgs::Empty> suber("toggle_led", &message_Callback);
 
-void message_Callback(const std_msgs::Empty& toggle_msg)
+void message_Callback(const std_msgs::Empty &toggle_msg)
 {
     digitalWrite(TIVA_BLUE_LED, HIGH - digitalRead(TIVA_BLUE_LED));
 }
@@ -274,7 +286,7 @@ void ros_PubSub_demo(void)
 
     pinMode(TIVA_BLUE_LED, OUTPUT);
 
-    h_Node.initNode();  
+    h_Node.initNode();
     h_Node.advertise(chatter);
     h_Node.subscribe(suber);
 
@@ -295,13 +307,13 @@ void ros_PubSub_demo(void)
 void pidMotorControl_demo(void)
 {
     DEBUG_PRINTF("Start PID Motor Control Demo\n");
-    
+
     /* PID Regulate periodic with SAMPLETIME = 2ms or 500Hz freq */
     attachTimerInterrupt(PID_TIMER_BASE, PID_TIMER_SYSCTL_PERIPH, &PID_TimerInterrupt_Handler, 500);
 
 #ifdef DEBUG_PID
     attachTimerInterrupt(DEBUG_TIMER_BASE, DEBUG_TIMER_SYSCTL_PERIPH, &DEBUGGER_TimerInterrupt_Handler, 1);
-#endif 
+#endif
 
     DEMO_MOTOR_WHEEL.setupInterrupt();
     DEMO_MOTOR_WHEEL.PIDEnable(KC, TAUI, TAUD, SAMPLETIME);
@@ -320,7 +332,7 @@ void pidMotorControl_demo(void)
         delay(3000);
         DEBUG_PRINTF("Motor run BACKOFF MMPS: 50 in 3sec\n");
         DEMO_MOTOR_WHEEL.setSpeedMMPS(50, DIR_BACKOFF);
-        delay(2000); 
+        delay(2000);
         DEBUG_PRINTF("Motor Stop in 3sec\n");
         DEMO_MOTOR_WHEEL.setSpeedMMPS(0, DIR_ADVANCE);
         delay(3000);
@@ -403,9 +415,9 @@ void ledBlink_demo(void)
 
     pinMode(TIVA_RED_LED, OUTPUT);
 
-    for (;;) 
+    for (;;)
     {
-        DEBUG_PRINTF("LED Blink %d", blinkCounter ++);
+        DEBUG_PRINTF("LED Blink %d", blinkCounter++);
         digitalWrite(TIVA_RED_LED, LOW);
         delay(500);
         digitalWrite(TIVA_RED_LED, HIGH);
@@ -427,7 +439,7 @@ void ledBlinkPWM_demo(void)
     pinMode(M1_PWM, OUTPUT);
 
     /* Main loop */
-    for (;;) 
+    for (;;)
     {
         analogWrite(M1_PWM, pwmIntensity);
         delay(20);
@@ -442,16 +454,15 @@ void ledBlinkPWM_demo(void)
             incrFlag = 1;
             DEBUG_PRINTF("Increasing PWM");
         }
-         
+
         if (incrFlag)
         {
-            pwmIntensity ++;
+            pwmIntensity++;
         }
         else
         {
-            pwmIntensity --;
+            pwmIntensity--;
         }
-
     }
 }
 

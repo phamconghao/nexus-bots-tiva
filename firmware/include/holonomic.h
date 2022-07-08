@@ -3,14 +3,6 @@
 
 #include "main.h"
 
-typedef struct
-{
-    /* data */
-    float position_x;
-    float position_y;
-    float heading;
-} holoOdom_t;
-
 /**
  * @brief 
  * 
@@ -39,8 +31,16 @@ void get_speed_body_frame_from_encoderMMPS(float robot_speed_body_frame[], float
 /**
  * @brief 
  * 
- * @param position 
- * @param heading 
+ * @param heading_angle 
+ * @param vector 
+ * @param transformed_vector 
+ */
+void robot_transform_body_to_inertial(float heading_angle, float vector[], float transformed_vector[]);
+
+/**
+ * @brief Calculate position and rotation of robot.
+ * 
+ * @param hOdom 
  * @param velocity 
  * @param omega 
  * @param delta_t 
@@ -48,22 +48,21 @@ void get_speed_body_frame_from_encoderMMPS(float robot_speed_body_frame[], float
 void robot_integrate_speed(float position[], float *heading, float velocity[], float omega, float delta_t);
 
 /**
- * @brief 
+ * @brief Set the Direction object
  * 
- * @param heading_angle 
- * @param vector 
- * @param transformed_vector 
+ * @param value     Direction velocity of each wheel robot.
+ * @return          Advance direction
+ * @return          Backoff direction 
  */
-void robot_transform_body_to_inertial(holoOdom_t hOdom, float vector[], float transformed_vector[]);
+bool setDirection(float value);
 
 /**
- * @brief 
+ * @brief Calculate speed each wheel rotation based on command velocity that is received the ROS. 
  * 
- * @param hOdom 
- * @param velocity 
- * @param omega 
- * @param delta_t 
+ * @param vel_x     Velocity of x axis
+ * @param vel_y     Velocity of y axis
+ * @param angu_z    Velocity rotation
  */
-void robot_integrate_speed(holoOdom_t hOdom, float velocity[], float omega, float delta_t);
+void robot_control_wheel(float vel_x, float angu_z, float vel_y = 0);
 
 #endif  // HOLONOMIC_H

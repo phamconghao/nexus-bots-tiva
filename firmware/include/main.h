@@ -13,6 +13,7 @@
 #include "MotorWheel.h"
 #include "Omni3WD.h"
 #include "holonomic.h"
+// #include "holonomic_3wheel.h"
 // Tiva C driver Include Files
 #include "inc/hw_ints.h"
 #include "inc/hw_memmap.h"
@@ -29,6 +30,11 @@
 #include <sensor_msgs/MagneticField.h>
 #include <nav_msgs/Odometry.h>
 #include <tf/transform_broadcaster.h>
+#include <geometry_msgs/Quaternion.h>
+#include <geometry_msgs/PoseWithCovarianceStamped.h>
+#include <geometry_msgs/PoseStamped.h>
+#include <tf/tf.h>
+#include <geometry_msgs/PoseStamped.h>
 /* BMX160 Include Files */
 #include <DFRobot_BMX160.h>
 #include "MadgwickAHRS.h"
@@ -59,9 +65,9 @@
     #define MICRO_PER_SEC 1000000
 #endif
 
-#define BODY_RADIUS                     110 //mm
+#define BODY_RADIUS                     150 // mm
 #define REDUCTION_RATIO_NAMIKI_MOTOR    80
-#define WHEEL_RADIUS                    24
+#define WHEEL_RADIUS                    50  // mm
 #define WHEEL_CIRC                      (WHEEL_RADIUS * 2 * PI)
 
 #define LCD_OPTION                      (0)
@@ -71,7 +77,7 @@
 
 /* TIVA Board */
 #define TIVA_RED_LED    PF_1
-#define TIVA_BLUE_LED   PF_2  
+#define TIVA_BLUE_LED   PF_2
 #define TIVA_GREEN_LED  PF_3
 #define TIVA_SW1        PF_4
 #define TIVA_SW2        PF_0
@@ -121,12 +127,14 @@ extern Omni3WD omniNexusBot;
 
 extern ros::NodeHandle h_Node;
 extern ros::Subscriber<geometry_msgs::Twist> sub_velTwist;
+extern ros::Subscriber<geometry_msgs::PoseWithCovarianceStamped> sub_initPose;
 // extern ros::Publisher pub_GyroAccel;
 // extern ros::Publisher pub_Mag;
 extern ros::Publisher pub_Odom;
 // extern sensor_msgs::Imu imu_GyroAccel_msg;
 // extern sensor_msgs::MagneticField imu_Mag_msg;
 extern nav_msgs::Odometry odom_msg;
+extern nav_msgs::Odometry odom_initpose;
 
 extern TwoWire Wire2;
 extern DFRobot_BMX160 bmx160;
@@ -142,6 +150,8 @@ extern float robot_heading_inertial;
 extern float robot_speed_inertial_frame[]; 
 extern float robot_speed_body_frame[];
 extern float omega;
+extern float robot_position_inertial[];
+extern bool initialPoseReceived;
 
 /**************************************************************************
  *                      User-defined Functions Prototype
@@ -171,61 +181,18 @@ void sttLED_Flash(void);
 void attachTimerInterrupt(uint32_t ui32Base, uint32_t ui32Peripheral, void (*p_TmrHandler)(void), unsigned int tmrFreq);
 
 /**
- * @brief User defined function to map ROS Geometry messages 
- *        linear value to Motor control value in MMPS
- * @details formular: mapped = (linearValue - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
- *          in_min = 0.00
- *          in_max = 0.1
- *          out_min = 0
- *          out_max = 150
- *          (out_max - out_min) / (in_max - in_min) + out_min = 2000
- * 
- * @param linearValue ROS Geometry messages linear value
- * @return Motor control value in MMPS
- */
-uint8_t geoLinear2mmps(float linearValue);
-
-/**
- * @brief User defined function to map ROS Geometry messages 
- *        angular value to Motor control value in MMPS
- * 
- * @param angularValue ROS Geometry messages angular value
- * @return Motor control value in MMPS
- */
-uint8_t geoAngular2mmps(float angularValue);
-
-/**
- * @brief The user can search for a value in a certain range 
- *        to compare whether the value belongs to the range 
- *        under consideration.
- * 
- * @param min_value     The value is minimum in a range
- * @param max_value     The value is maximum in a range
- * @param comp_value    The value is considered in a range
- * @return true 
- * @return false 
- */
-bool positive_inRange(float min_value, float max_value, float comp_value);
-
-/**
- * @brief The user can search for a value in a certain range 
- *        to compare whether the value belongs to the range 
- *        under consideration.
- * 
- * @param min_value     The value is minimum in a range
- * @param max_value     The value is maximum in a range
- * @param comp_value    The value is considered in a range
- * @return true 
- * @return false 
- */
-bool negative_inRange(float min_value, float max_value, float comp_value);
-
-/**
  * @brief Implement speed control advance or back-off 
  *        from Jetson Nano's command
  * 
  * @param cmd_twistSpeed Twist value from keyboard.
  */
 void cmdTwistSpeedCallback(const geometry_msgs::Twist& cmd_twistSpeed);
+
+/**
+ * @brief 
+ * 
+ * @param init_pose 
+ */
+void initialPoseCallback(const geometry_msgs::PoseWithCovarianceStamped& init_pose);
 
 #endif /* MAIN_H */
